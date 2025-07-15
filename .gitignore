@@ -416,3 +416,21 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Docs
+docs/_site
+docs/api
+docs/.vitepress/cache
+docs/.vitepress/dist
+
+# Idea / Rider files
+.idea/
+
+# Internal Generated Code
+**/Internal/Generated/
+
+# macOS metadata files
+.DS_Store
+._*
+**/._bin
+**/._obj
