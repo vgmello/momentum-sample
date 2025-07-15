@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Operations.Extensions.Abstractions\Operations.Extensions.Abstractions.csproj"/>
+        <ProjectReference Include="..\..\src\Operations.Extensions\Operations.Extensions.csproj"/>
+        <ProjectReference Include="..\..\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj" />
+    </ItemGroup>
+
+</Project>
