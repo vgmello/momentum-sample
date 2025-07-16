@@ -26,7 +26,6 @@
     <!--#endif -->
 
     <ItemGroup>
-        <!-- Generator dependencies -->
         <ProjectReference Include="..\Operations.Extensions.Abstractions\Operations.Extensions.Abstractions.csproj" PrivateAssets="all"/>
     </ItemGroup>
 

@@ -5,8 +5,6 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageId>$(AssemblyName)</PackageId>
-        <PackageVersion>$(Version)</PackageVersion>
         <PackageTags>billing.contracts</PackageTags>
         <IncludeSource>true</IncludeSource>
         <Authors>ABCDEG</Authors>
@@ -15,6 +13,12 @@
         <RepositoryUrl>https://github.com/ABCDEG/templates</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="Operations.Extensions.Abstractions.Messaging.DefaultDomainAttribute">
+            <Domain>Billing</Domain>
+        </AssemblyAttribute>
+    </ItemGroup>
 
     <ItemGroup>
         <Compile Include="..\Billing\**\Contracts\IntegrationEvents\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)"/>
@@ -26,13 +30,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\libs\Operations\src\Operations.Extensions.Abstractions\Operations.Extensions.Abstractions.csproj"/>
+        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <AssemblyAttribute Include="Operations.Extensions.Abstractions.Messaging.DefaultDomainAttribute">
-            <Domain>Billing</Domain>
-        </AssemblyAttribute>
-    </ItemGroup>
+    <Import Project="$(SolutionDir)libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.props" />
 
 </Project>

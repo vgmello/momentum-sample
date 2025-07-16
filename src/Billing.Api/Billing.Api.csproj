@@ -14,10 +14,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults.Api\Operations.ServiceDefaults.Api.csproj"/>
-        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj"/>
         <ProjectReference Include="..\Billing\Billing.csproj"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults.Api\Operations.ServiceDefaults.Api.csproj"/>
+        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj"/>
+    </ItemGroup>
+
+    <Import Project="$(SolutionDir)libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.props" />
 
     <ItemGroup>
         <Protobuf Include="**/Protos/**/*.proto" ProtoRoot="." GrpcServices="Server"/>

@@ -1,4 +1,3 @@
 <Project>
-    <ItemGroup Condition="'$(ImplicitUsings)' == 'enable'">
-    </ItemGroup>
+    <Import Project="$(SolutionDir)libs\Operations\src\Operations.Extensions\Operations.Extensions.props" />
 </Project>

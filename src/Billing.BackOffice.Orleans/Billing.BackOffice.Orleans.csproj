@@ -8,7 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj"/>
         <ProjectReference Include="..\Billing\Billing.csproj"/>
     </ItemGroup>
 
@@ -21,5 +20,11 @@
         <PackageReference Include="Microsoft.Orleans.Server"/>
         <PackageReference Include="OrleansDashboard"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj"/>
+    </ItemGroup>
+
+    <Import Project="$(SolutionDir)libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.props" />
 
 </Project>
