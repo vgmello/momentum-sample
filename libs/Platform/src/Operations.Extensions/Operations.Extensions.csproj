@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <!-- if (!LocalLibs) -->
     <ItemGroup>
-        <None Include="Operations.Extensions.props" Pack="true" PackagePath="build/"/>
+        <None Include="Operations.Extensions.props" Pack="true" PackagePath="build/" />
     </ItemGroup>
+    <!-- endif -->
 
     <ItemGroup>
         <PackageReference Include="FluentValidation"/>

@@ -3,8 +3,6 @@
             Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
 
     <PropertyGroup Condition=" '$(IsPackable)' == 'true' ">
-        <PackageId>$(AssemblyName)</PackageId>
-        <PackageVersion>$(Version)</PackageVersion>
         <PackageTags>platform;sdk;</PackageTags>
         <IncludeSource>true</IncludeSource>
         <Authors>ABCDEG</Authors>

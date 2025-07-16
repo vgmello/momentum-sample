@@ -60,12 +60,6 @@ public static class OpenTelemetrySetupExtensions
             .AddKeyedSingleton<Meter>(MessagingMeterStore.MessagingMeterKey,
                 (provider, _) => provider.GetRequiredService<IMeterFactory>().Create(messagingMeterName));
 
-        builder.Logging.AddOpenTelemetry(logging =>
-        {
-            logging.IncludeFormattedMessage = true;
-            logging.IncludeScopes = true;
-        });
-
         // Configure W3C Trace Context and Baggage propagation
         Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator([
             new TraceContextPropagator(),

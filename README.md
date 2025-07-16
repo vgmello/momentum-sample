@@ -273,6 +273,7 @@ dotnet run --project Billing/src/Billing.BackOffice.Orleans
 -   **gRPC**: Connect to localhost:8102
 
 ### Option 3: Docker Compose
+### Option 3: Docker Compose
 
 For containerized deployment:
 

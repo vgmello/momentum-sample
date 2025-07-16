@@ -3,6 +3,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
         <AspireAppHostSdkVersion>9.3.1</AspireAppHostSdkVersion>
     </PropertyGroup>
+
     <ItemGroup>
         <PackageVersion Include="Aspire.Azure.Data.Tables" Version="9.3.1"/>
         <PackageVersion Include="Aspire.Confluent.Kafka" Version="9.3.1"/>

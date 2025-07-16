@@ -1,11 +1,12 @@
 <Project>
+
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <CodeAnalysisRuleSet>..\..\..\Operations.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>..\..\ABCDEG.ruleset</CodeAnalysisRuleSet>
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
@@ -18,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\..\..\.dockerignore" Condition="Exists('Dockerfile')">
+        <Content Include="..\..\.dockerignore" Condition="Exists('Dockerfile')">
             <Link>.dockerignore</Link>
         </Content>
     </ItemGroup>
