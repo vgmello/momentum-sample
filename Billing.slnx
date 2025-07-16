@@ -7,15 +7,15 @@
     <Project Path="infra\Billing.Database\Billing.Database.csproj" />
   </Folder>
   <Folder Name="/Libs/">
-    <Project Path="libs\Platform\src\Operations.Extensions.Abstractions\Operations.Extensions.Abstractions.csproj" Type="Classic C#" />
-    <Project Path="libs\Platform\src\Operations.Extensions.SourceGenerators\Operations.Extensions.SourceGenerators.csproj" Type="Classic C#" />
-    <Project Path="libs\Platform\src\Operations.Extensions\Operations.Extensions.csproj" Type="Classic C#" />
-    <Project Path="libs\Platform\src\Operations.ServiceDefaults.Api\Operations.ServiceDefaults.Api.csproj" Type="Classic C#" />
-    <Project Path="libs\Platform\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj" Type="Classic C#" />
+    <Project Path="libs\Operations\src\Operations.Extensions.Abstractions\Operations.Extensions.Abstractions.csproj" Type="Classic C#" />
+    <Project Path="libs\Operations\src\Operations.Extensions.SourceGenerators\Operations.Extensions.SourceGenerators.csproj" Type="Classic C#" />
+    <Project Path="libs\Operations\src\Operations.Extensions\Operations.Extensions.csproj" Type="Classic C#" />
+    <Project Path="libs\Operations\src\Operations.ServiceDefaults.Api\Operations.ServiceDefaults.Api.csproj" Type="Classic C#" />
+    <Project Path="libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Libs/Solution Items/">
-    <File Path="libs\Platform\Directory.Build.props" />
-    <File Path="libs\Platform\Directory.Build.targets" />
+    <File Path="libs\Operations\src\Directory.Build.props" />
+    <File Path="libs\Operations\src\Directory.Build.targets" />
   </Folder>
   <Folder Name="/Solution Items/">
     <Project Path="docs\Billing.Docs.csproj" Type="Classic C#" />
@@ -25,7 +25,6 @@
     <File Path="ABCDEG.ruleset" />
     <File Path="Billing.slnx.DotSettings" />
     <File Path="Directory.Build.props" />
-    <File Path="Directory.Build.targets" />
     <File Path="Directory.Packages.props" />
     <File Path="README.md" />
     <File Path="compose.yml" />

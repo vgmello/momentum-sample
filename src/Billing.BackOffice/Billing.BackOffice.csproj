@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Billing\Billing.csproj"/>
-        <ProjectReference Include="..\..\libs\Platform\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\..\libs\Operations\src\Operations.ServiceDefaults\Operations.ServiceDefaults.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

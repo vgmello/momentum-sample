@@ -56,6 +56,7 @@ services:
   # Profiled Services
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:9.3
+    profiles: [ "aspire" ]
     ports:
       - "18100:18888"
       - "18890:18890"
@@ -66,8 +67,7 @@ services:
 
   billing-api:
     build:
-      context: ../                                     #TODO: Update for the actual template
-      dockerfile: ./Billing/src/Billing.Api/Dockerfile #TODO: update for the actual template
+      dockerfile: ./src/Billing.Api/Dockerfile
     profiles: ["api"]
     ports:
       - "8101:8080"
@@ -99,8 +99,7 @@ services:
 
   billing-backoffice:
     build:
-      context: ../
-      dockerfile: ./Billing/src/Billing.BackOffice/Dockerfile
+      dockerfile: ./src/Billing.BackOffice/Dockerfile
     profiles: ["backoffice"]
     ports:
       - "8103:8080"
@@ -123,7 +122,6 @@ services:
 
   billing-docs:
     build:
-      context: ../
       dockerfile: ./docs/Dockerfile
     profiles: ["docs"]
     ports:

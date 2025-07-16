@@ -2,6 +2,16 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"
             Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
 
+    <PropertyGroup>
+        <IsPackable>True</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(IsPackable)' == 'true' and '$(Configuration)' == 'Debug' ">
+        <Version>1.0.0</Version>
+        <VersionSuffix>$([System.DateTime]::UtcNow.ToString("yyyyMMdd-HHmmss"))</VersionSuffix>
+        <PackageVersion>$(Version)-$(VersionSuffix)</PackageVersion>
+    </PropertyGroup>
+
     <PropertyGroup Condition=" '$(IsPackable)' == 'true' ">
         <PackageTags>platform;sdk;</PackageTags>
         <IncludeSource>true</IncludeSource>
@@ -10,6 +20,7 @@
         <Copyright>Copyright (c) ABCDEG. All rights reserved.</Copyright>
         <RepositoryUrl>https://github.com/ABCDEG/templates</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
 </Project>
