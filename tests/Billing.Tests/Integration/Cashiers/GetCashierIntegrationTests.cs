@@ -30,6 +30,7 @@ public class GetCashierIntegrationTests(IntegrationTestFixture fixture) : Integr
         // Assert
         response.ShouldBe(new Billing.Cashiers.Grpc.Models.Cashier
         {
+            TenantId = Guid.Empty.ToString(),
             CashierId = createResponse.CashierId,
             Name = createRequest.Name,
             Email = createRequest.Email
