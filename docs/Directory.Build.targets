@@ -4,6 +4,7 @@
     </PropertyGroup>
 
     <Target Name="_CheckForUnsupportedTargetFramework"/>
+    <Target Name="Restore" />
     <Target Name="Build" />
     <Target Name="Clean" />
     <Target Name="GetTargetPath" />
