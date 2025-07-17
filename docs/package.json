@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "devDependencies": {
+    "@types/node": "^24.0.14",
     "mermaid": "^11.9.0",
     "vitepress": "^1.6.3"
   },

@@ -33,54 +33,54 @@ export default defineConfig({
 
         sidebar: {
             "/arch/": {
-                base: "/arch/",
+                base: "/arch",
                 items: [
                     {
                         text: "Architecture",
                         collapsed: false,
                         items: [
                             { text: "Overview", link: "/" },
-                            { text: "Event-Driven Architecture", link: "events" },
-                            { text: "Database Design", link: "database" },
-                            { text: "Background Processing", link: "background-processing" },
+                            { text: "Event-Driven Architecture", link: "/events" },
+                            { text: "Database Design", link: "/database" },
+                            { text: "Background Processing", link: "/background-processing" },
                         ],
                     },
                     {
                         text: "Patterns",
                         collapsed: false,
                         items: [
-                            { text: "CQRS Implementation", link: "cqrs" },
-                            { text: "Error Handling", link: "error-handling" },
-                            { text: "Testing Strategies", link: "testing" },
+                            { text: "CQRS Implementation", link: "/cqrs" },
+                            { text: "Error Handling", link: "/error-handling" },
+                            { text: "Testing Strategies", link: "/testing" },
                         ],
                     },
                 ],
             },
             "/guide/": {
-                base: "/guide/",
+                base: "/guide",
                 items: [
                     {
                         text: "Introduction",
                         collapsed: false,
                         items: [
                             { text: "Billing Solution", link: "/" },
-                            { text: "Getting Started", link: "getting-started" },
+                            { text: "Getting Started", link: "/getting-started" },
                         ],
                     },
                     {
                         text: "Cashiers",
                         collapsed: false,
-                        items: [{ text: "Cashiers Overview", link: "cashiers/" }],
+                        items: [{ text: "Cashiers Overview", link: "/cashiers/" }],
                     },
                     {
                         text: "Invoices",
                         collapsed: false,
-                        items: [{ text: "Invoices Overview", link: "invoices/" }],
+                        items: [{ text: "Invoices Overview", link: "/invoices/" }],
                     },
                     {
                         text: "Bills",
                         collapsed: false,
-                        items: [{ text: "Bills Overview", link: "bills/" }],
+                        items: [{ text: "Bills Overview", link: "/bills/" }],
                     },
                     {
                         text: "Developer Guide",
@@ -94,7 +94,7 @@ export default defineConfig({
                 ],
             },
             "/reference": {
-                base: "/reference/",
+                base: "/reference",
                 items: generateReferenceSidebar(),
             },
         },
