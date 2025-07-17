@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "devDependencies": {
+    "mermaid": "^11.9.0",
     "vitepress": "^1.6.3"
   },
   "scripts": {

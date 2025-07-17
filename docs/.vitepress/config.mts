@@ -1,15 +1,27 @@
-import { defineConfig } from "vitepress";
+import { defineConfig, type MarkdownOptions } from "vitepress";
+import MermaidExample from "./mermaidjs.mjs";
 
-// https://vitepress.dev/reference/site-config
+const allMarkdownTransformers: MarkdownOptions = {
+    theme: {
+        light: "github-light",
+        dark: "github-dark",
+    },
+
+    config: (md) => {
+        MermaidExample(md);
+    },
+};
+
 export default defineConfig({
     title: "Billing Solution",
     description: "Comprehensive billing management system with Cashiers, Invoices, and Bills",
+    markdown: allMarkdownTransformers,
     themeConfig: {
         nav: [
             { text: "Home", link: "/" },
             { text: "API", link: "/api/" },
             { text: "Events", link: "/events/" },
-            { text: "Guide", link: "/guide/" },
+            { text: "Guide", link: "/guide/index" },
             { text: "Architecture", link: "/arch/" },
             { text: "Reference", link: "/reference/Billing" },
         ],
@@ -26,7 +38,7 @@ export default defineConfig({
                         text: "Architecture",
                         collapsed: false,
                         items: [
-                            { text: "Clean Architecture Overview", link: "/" },
+                            { text: "Overview", link: "/" },
                             { text: "Event-Driven Architecture", link: "events" },
                             { text: "Database Design", link: "database" },
                             { text: "Background Processing", link: "background-processing" },
@@ -86,7 +98,7 @@ export default defineConfig({
             "/reference": [],
         },
 
-        socialLinks: [{ icon: "github", link: "https://github.com/vuejs/vitepress" }],
+        socialLinks: [{ icon: "github", link: "https://github.com/" }],
 
         footer: {
             message: "Billing Service Documentation",

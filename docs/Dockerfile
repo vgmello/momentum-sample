@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1-labs
 
 # --- Build Stage for .NET and DocFX API generation ---
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS dotnet
@@ -21,26 +21,26 @@ RUN dotnet restore --verbosity minimal
 
 # Copy the rest of the source code and build
 COPY . .
-RUN dotnet build --no-restore
+# RUN dotnet build --no-restore
 
-# Generate API reference documentation
-WORKDIR /app/docs
-RUN docfx docfx.json
+# # Generate API reference documentation
+# WORKDIR /app/docs
+# RUN docfx docfx.json
 
-# --- Build Stage for Node.js documentation site ---
-FROM node:22-alpine AS docs
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@latest --activate && apk add --no-cache git
+# # --- Build Stage for Node.js documentation site ---
+# FROM node:22-alpine AS docs
+# ENV PNPM_HOME="/pnpm"
+# ENV PATH="$PNPM_HOME:$PATH"
+# RUN corepack enable && corepack prepare pnpm@latest --activate && apk add --no-cache git
 
-WORKDIR /app
+# WORKDIR /app
 
-# Install dependencies
-COPY docs/package.json docs/pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# # Install dependencies
+# COPY docs/package.json docs/pnpm-lock.yaml ./
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Copy dotnet generated docs, the other docs will be mounted
-COPY --from=dotnet /app/docs/reference /app2/docs/reference
+# # Copy dotnet generated docs, the other docs will be mounted
+# COPY --from=dotnet /app/docs/reference /app2/docs/reference
 
-# Run side (non-prod)
-CMD ["pnpm", "docs:dev", "--host"]
+# # Run side (non-prod)
+# CMD ["pnpm", "docs:dev", "--host"]
