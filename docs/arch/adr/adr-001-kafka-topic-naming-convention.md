@@ -1,9 +1,12 @@
-# ADR-001: Kafka Topic Naming Convention
-
-**Status:** Proposed
-**Date:** 2025-07-04
-
 ---
+number: ADR-001
+title: Kafka Topic Naming Convention
+
+status: Proposed
+date: 2025-07-04
+---
+
+# Kafka Topic Naming Convention
 
 ## Context
 
