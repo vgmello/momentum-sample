@@ -1,1 +1,9 @@
-<Project Sdk="Microsoft.Build.NoTargets/3.7.56" />
+<Project Sdk="Microsoft.Build.NoTargets/3.7.56">
+  <PropertyGroup>
+    <OutputPath></OutputPath>
+    <IntermediateOutputPath></IntermediateOutputPath>
+    <RestoreProjectStyle>Unknown</RestoreProjectStyle>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <DisableImplicitPackageTargetFallback>true</DisableImplicitPackageTargetFallback>
+  </PropertyGroup>
+</Project>
