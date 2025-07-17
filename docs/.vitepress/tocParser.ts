@@ -1,17 +1,11 @@
 import { readFileSync } from "fs";
 import { parse } from "yaml";
+import { DefaultTheme } from "vitepress";
 
 export interface TocItem {
     name: string;
     href?: string;
     items?: TocItem[];
-}
-
-export interface VitePressNavItem {
-    text: string;
-    link?: string;
-    items?: VitePressNavItem[];
-    collapsed?: boolean;
 }
 
 export function parseTocYaml(tocFilePath: string): TocItem[] {
@@ -41,9 +35,13 @@ export function parseTocYaml(tocFilePath: string): TocItem[] {
     }
 }
 
-export function convertTocToVitePressSidebar(tocItems: TocItem[], collapsed: boolean = true, basePath: string = ""): VitePressNavItem[] {
+export function convertTocToVitePressSidebar(
+    tocItems: TocItem[],
+    collapsed: boolean = true,
+    basePath: string = ""
+): DefaultTheme.SidebarItem[] {
     return tocItems.map((item) => {
-        const navItem: VitePressNavItem = {
+        const navItem: DefaultTheme.SidebarItem = {
             text: item.name,
             collapsed: collapsed,
         };
@@ -66,12 +64,12 @@ export function convertTocToVitePressSidebar(tocItems: TocItem[], collapsed: boo
     });
 }
 
-export function generateReferenceSidebar(tocFilePath: string = "reference/toc.yml"): VitePressNavItem[] {
+export function generateReferenceSidebar(tocFilePath: string = "reference/toc.yml"): DefaultTheme.SidebarItem[] {
     const tocItems = parseTocYaml(tocFilePath);
     return convertTocToVitePressSidebar(tocItems, false);
 }
 
-export function generateSidebarFromToc(tocFilePath: string, basePath: string = ""): VitePressNavItem[] {
+export function generateSidebarFromToc(tocFilePath: string, basePath: string = ""): DefaultTheme.SidebarItem[] {
     const tocItems = parseTocYaml(tocFilePath);
     return convertTocToVitePressSidebar(tocItems, false, basePath);
 }
