@@ -5,31 +5,28 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8443
 
-## Build stage
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 
-# Grpc tools
+## Install gRPC tools
 RUN apk add --no-cache grpc-plugins
 ENV PROTOBUF_PROTOC=/usr/bin/protoc
 ENV GRPC_PROTOC_PLUGIN=/usr/bin/grpc_csharp_plugin
 
 WORKDIR /src
 
+## Copy all project and solution files to restore dependencies
 COPY --parents **/**/**/*.csproj .
+COPY *.slnx Directory.Build.props Directory.Packages.props ./
 
-# Copy global build configuration files first (changes rarely)
-COPY *.slnx .
-COPY Directory.Packages.props .
-COPY Directory.Build.props .
-
-# Restore packages - this layer is cached unless dependencies change
+## Restore packages - this layer is cached unless dependencies change
 RUN dotnet restore --verbosity minimal
 
-# Copy source code (this layer invalidates on any code change)
+## Copy source code (this layer invalidates on any code change)
 COPY . .
 
-## Build & Publish
+# Build & Publish
 RUN dotnet publish "src/Billing.Api/Billing.Api.csproj" \
     -c "$BUILD_CONFIGURATION" \
     -o /app/publish \
