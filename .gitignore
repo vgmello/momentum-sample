@@ -434,3 +434,4 @@ docs/.vitepress/dist
 ._*
 **/._bin
 **/._obj
+temp/
