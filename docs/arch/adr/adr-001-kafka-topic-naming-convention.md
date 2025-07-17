@@ -1,7 +1,6 @@
 ---
 number: ADR-001
 title: Kafka Topic Naming Convention
-
 status: Proposed
 date: 2025-07-04
 ---

@@ -1,7 +1,7 @@
 import { defineConfig, type MarkdownOptions } from "vitepress";
 import MermaidExample from "./mermaidjs.mjs";
 import { generateReferenceSidebar } from "./tocParser";
-import { generateAdrSidebarItems } from "./adrParser";
+import { generateAdrSidebar } from "./adrParser";
 
 const allMarkdownTransformers: MarkdownOptions = {
     theme: {
@@ -44,7 +44,7 @@ export default defineConfig({
                             { text: "Event-Driven Architecture", link: "/events" },
                             { text: "Database Design", link: "/database" },
                             { text: "Background Processing", link: "/background-processing" },
-                            ...generateAdrSidebarItems(),
+                            generateAdrSidebar(),
                         ],
                     },
                     {

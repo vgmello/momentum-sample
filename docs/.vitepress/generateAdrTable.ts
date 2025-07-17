@@ -1,11 +1,10 @@
-import { writeFileSync } from "fs";
-import { join } from "path";
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { generateAdrTable } from "./adrParser";
 
-// This script generates the ADR table.md file
-const adrDir = join(__dirname, "../arch/adr");
+const adrDir = join(import.meta.dirname, "../arch/adr");
 const tableContent = generateAdrTable(adrDir);
 const outputPath = join(adrDir, "table.md");
 
 writeFileSync(outputPath, tableContent, "utf-8");
-console.log(`ADR table generated at: ${outputPath}`);
+console.log(`✅ ADR table generated at: ${outputPath}`);
