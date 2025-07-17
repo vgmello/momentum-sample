@@ -1,0 +1,39 @@
+# CashierCreated
+
+**Status:** Active  
+**Version:** v1  
+**Topic:** `cashiers`  
+**Type:** Integration Event
+
+## Description
+
+Published when a new cashier is successfully created in the billing system. This event contains the complete cashier data and partition key information for proper message routing.
+
+## When It's Triggered
+
+This event is published when:
+- A new cashier is created via the `CreateCashierCommand`
+- The cashier creation process completes successfully
+- All cashier validation and business rules have been satisfied
+
+## Event Payload
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| TenantId | `Guid` | ✓ | Identifier of the tenant that owns the cashier (partition key) |
+| PartitionKeyTest | `int` | ✓ | Additional partition key for message routing (partition key) |
+| Cashier | `Cashier` | ✓ | Complete cashier object containing all cashier data and configuration |
+
+### Partition Keys
+
+This event uses multiple partition keys for message routing:
+- `TenantId` - Primary partition key based on tenant
+- `PartitionKeyTest` - Secondary partition key for routing optimization
+
+## Technical Details
+
+- **Full Type:** `Billing.Cashiers.Contracts.IntegrationEvents.CashierCreated`
+- **Namespace:** `Billing.Cashiers.Contracts.IntegrationEvents`
+- **Topic Attribute:** `[EventTopic<Cashier>]`
+- **Payload Type:** Record with positional parameters
+- **Partition Keys:** TenantId, PartitionKeyTest (both marked with `[PartitionKey]`)

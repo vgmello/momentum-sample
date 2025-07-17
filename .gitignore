@@ -435,3 +435,4 @@ docs/.vitepress/dist
 **/._bin
 **/._obj
 temp/
+requirements/
