@@ -19,8 +19,11 @@ hero:
 features:
     - title: Bills
       details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      link: /guide/bills/
     - title: Cashiers
       details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      link: /guide/cashiers/
     - title: Invoices
       details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      link: /guide/invoices/
 ---

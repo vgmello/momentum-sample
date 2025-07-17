@@ -5,15 +5,18 @@ export default defineConfig({
     title: "Billing Solution",
     description: "An App Template",
     themeConfig: {
-        // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: "Home", link: "/" },
             { text: "API", link: "/api/" },
             { text: "Events", link: "/events/" },
-            { text: "Architecture", link: "/arch/" },
             { text: "Guide", link: "/guide/" },
+            { text: "Architecture", link: "/arch/" },
             { text: "Reference", link: "/reference/" },
         ],
+
+        search: {
+            provider: "local",
+        },
 
         sidebar: {
             "/arch/": {
@@ -24,14 +27,14 @@ export default defineConfig({
                         collapsed: false,
                         items: [
                             { text: "Overview", link: "/" },
-                            { text: "ADRs", link: "/" },
                             { text: "Infrastructure", link: "/" },
+                            { text: "ADRs", link: "adr/", collapsed: true },
                         ],
                     },
                     {
                         text: "Data",
                         collapsed: false,
-                        items: [{ text: "Databases", link: "/" }],
+                        items: [{ text: "Databases", link: "/database" }],
                     },
                 ],
             },
@@ -46,12 +49,29 @@ export default defineConfig({
                             { text: "Getting Started", link: "getting-started" },
                         ],
                     },
+                    {
+                        base: "/guide/cashiers/",
+                        text: "Cashiers",
+                        collapsed: false,
+                        items: [{ text: "Overview", link: "/" }],
+                    },
+                    {
+                        base: "/guide/invoices",
+                        text: "Invoices",
+                        collapsed: false,
+                        items: [{ text: "Overview", link: "/" }],
+                    },
                 ],
             },
             "/reference": [],
         },
 
         socialLinks: [{ icon: "github", link: "https://github.com/vuejs/vitepress" }],
+
+        footer: {
+            message: "Billing Service Documentation",
+            copyright: "Copyright © 2025 Billing Team",
+        },
     },
     lastUpdated: true,
     cleanUrls: true,

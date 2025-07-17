@@ -1,4 +1,7 @@
 {
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "",
   "devDependencies": {
     "vitepress": "^1.6.3"
   },

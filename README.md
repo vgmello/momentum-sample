@@ -61,28 +61,24 @@ The solution follows a microservices architecture with shared platform libraries
 
 ```
 .
-├── Billing/                         # Billing microservice
-│   ├── docs/                        # DocFX documentation system
-│   ├── infra/                       # Infrastructure and database
-│   │   └── Billing.Database/        # Liquibase Database project
-│   ├── src/                         # Source code projects
-│   │   ├── Billing/                 # Domain logic
-│   │   ├── Billing.Api/             # REST/gRPC endpoints
-│   │   ├── Billing.AppHost/         # .NET Aspire orchestration
-│   │   ├── Billing.BackOffice/      # Background processing
-│   │   ├── Billing.BackOffice.Orleans/  # Orleans stateful processing
-│   │   └── Billing.Contracts/       # Integration events and models
-│   └── test/                        # Testing projects
-│       └── Billing.Tests/           # Unit, Integration, and Architecture tests
+├── docs/                            # DocFX documentation system
+├── infra/                           # Infrastructure and database
+│   └── Billing.Database/            # Liquibase Database project
+├── src/                             # Source code projects
+│   ├── Billing/                     # Domain logic
+│   ├── Billing.Api/                 # REST/gRPC endpoints
+│   ├── Billing.AppHost/             # .NET Aspire orchestration
+│   ├── Billing.BackOffice/          # Background processing
+│   ├── Billing.BackOffice.Orleans/  # Orleans stateful processing
+│   └── Billing.Contracts/           # Integration events and models
+├── tests/                           # Testing projects
+│   └── Billing.Tests/               # Unit, Integration, and Architecture tests
 └── libs/                            # Shared libraries
-    └── Operations/                  # Platform operations framework
-        ├── docs/                    # Platform documentation
+    └── Operations/                  # Operations libs
         ├── src/                     # Platform source code
-        │   ├── Operations.Extensions/
-        │   ├── Operations.Extensions.Abstractions/
-        │   ├── Operations.Extensions.SourceGenerators/
-        │   ├── Operations.ServiceDefaults/
-        │   └── Operations.ServiceDefaults.Api/
+        │   ├── Operations.Extensions.*
+        │   ├── Operations.ServiceDefaults.*
+        │   └── ...
         └── tests/                   # Platform tests
 ```
 
@@ -155,126 +151,6 @@ Custom source generators reduce boilerplate DB access code with attributes like:
 [DbCommand(sp: "billing.create_cashier", nonQuery: true)]
 public partial record CreateCashierCommand(string Name, string? Email) : ICommand<Guid>;
 ```
-
-## Platform Operations Framework
-
-The solution leverages a comprehensive Platform Operations framework located in `libs/Operations/` that provides standardized infrastructure patterns for building .NET microservices.
-
-### Framework Components
-
-#### **Core Libraries**
-
--   **Operations.ServiceDefaults** - Core infrastructure patterns including:
-
-    -   Standardized service setup with minimal configuration
-    -   Built-in logging (Serilog), observability (OpenTelemetry), and health checks
-    -   Wolverine-based message handling with CloudEvents support
-    -   Convention-over-configuration approach for microservices
-
--   **Operations.ServiceDefaults.Api** - API-specific extensions including:
-
-    -   OpenAPI/Swagger documentation with XML comment support
-    -   gRPC service integration with Protocol Buffers
-    -   Automatic route transformation (kebab-case)
-    -   Endpoint filters and middleware
-
--   **Operations.Extensions** - Extension methods and utility implementations for:
-
-    -   Database connection management and pooling
-    -   Serialization and deserialization patterns
-    -   Performance optimizations and zero-allocation patterns
-
--   **Operations.Extensions.Abstractions** - Core abstractions and interfaces defining:
-    -   Service contracts and dependency injection patterns
-    -   Database operation interfaces
-    -   Messaging abstractions for cross-service communication
-
-#### **Source Generation**
-
--   **Operations.Extensions.SourceGenerators** - Compile-time code generators that:
-    -   Generate database command handlers at compile-time
-    -   Provide zero-allocation database operations
-    -   Support multiple data sources with keyed dependency injection
-    -   Enable type-safe database operations with compile-time validation
-
-### Framework Features
-
-#### **Service Infrastructure**
-
--   **Standardized Setup**: Services can be configured with minimal boilerplate using `builder.AddServiceDefaults()`
--   **Observability**: Built-in OpenTelemetry integration for distributed tracing and metrics
--   **Health Checks**: Automatic health check endpoints for Kubernetes readiness/liveness probes
--   **Security**: Built-in HTTPS enforcement, JWT validation, and rate limiting
-
-#### **Database Operations**
-
--   **Performance**: Zero-allocation patterns through source generation
--   **Type Safety**: Compile-time validation for database operations
--   **Multi-Database**: Support for multiple database connections with keyed services
--   **Migrations**: Integration with Liquibase for schema management
-
-#### **Messaging & Events**
-
--   **CloudEvents**: StandardizedEvent format for cross-service communication
--   **Kafka Integration**: Built-in Kafka support for event streaming
--   **CQRS Patterns**: Command/Query separation with Wolverine message handling
--   **Event Sourcing**: Support for event-driven architecture patterns
-
-#### **Usage Pattern**
-
-Services using this platform typically follow this simple pattern:
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-// Add core infrastructure
-builder.AddServiceDefaults();
-
-// Add API features (for web services)
-builder.AddApiServiceDefaults();
-
-var app = builder.Build();
-
-// Configure middleware
-app.MapDefaultEndpoints();
-app.Run();
-```
-
-This setup automatically configures logging, tracing, health checks, messaging, and API documentation with production-ready defaults.
-
-### Testing Strategy
-
--   **Unit Tests**: Mock-based testing with NSubstitute
--   **Integration Tests**: End-to-end testing with real PostgreSQL via Testcontainers
--   **Architecture Tests**: NetArchTest enforcement of layering rules
-
-## Port Configuration
-
-The Billing service uses the following port allocation:
-
-### Aspire Dashboard
-
--   **Aspire Dashboard:** 18100 (HTTP) / 18110 (HTTPS)
--   **Aspire Resource Service:** 8100 (HTTP) / 8110 (HTTPS)
-
-### Service Ports (8100-8119)
-
--   **Billing.Api:** 8101 (HTTP) / 8111 (HTTPS) / 8102 (gRPC insecure)
--   **Billing.BackOffice:** 8103 (HTTP) / 8113 (HTTPS)
--   **Billing.BackOffice.Orleans:** 8104 (HTTP) / 8114 (HTTPS)
--   **Documentation Service:** 8119
-
-### Shared Services
-
--   **54320**: PostgreSQL
--   **4317/4318**: OpenTelemetry OTLP
-
-## Prerequisites
-
--   Docker (optional, for containerized deployment) or..
--   .NET 9 SDK
--   PostgreSQL running on localhost:5432 (username: `postgres`, password: `password@`)
--   Liquibase CLI (for manual database setup)
 
 ## Quick Start
 
