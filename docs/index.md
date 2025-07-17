@@ -3,8 +3,8 @@ layout: home
 
 hero:
     name: "Billing Solution"
-    text: "An App Template"
-    tagline: Something about the solution
+    text: "Enterprise Billing Management"
+    tagline: A comprehensive system for managing cashiers, invoices, and billing operations with event-driven architecture
     actions:
         - theme: brand
           text: API Definition
@@ -18,12 +18,12 @@ hero:
 
 features:
     - title: Bills
-      details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      details: Comprehensive bill management system for tracking and organizing billing records (coming soon)
       link: /guide/bills/
     - title: Cashiers
-      details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      details: Complete cashier management with CRUD operations, event-driven workflows, and payment tracking
       link: /guide/cashiers/
     - title: Invoices
-      details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      details: Full invoice lifecycle management from creation to payment with status tracking and automated workflows
       link: /guide/invoices/
 ---
