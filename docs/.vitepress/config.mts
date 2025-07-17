@@ -11,7 +11,7 @@ export default defineConfig({
             { text: "Events", link: "/events/" },
             { text: "Guide", link: "/guide/" },
             { text: "Architecture", link: "/arch/" },
-            { text: "Reference", link: "/reference/" },
+            { text: "Reference", link: "/reference/Billing" },
         ],
 
         search: {

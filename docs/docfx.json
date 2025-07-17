@@ -6,72 +6,18 @@
         {
           "src": "../src",
           "files": [
-            "**/bin/Release/**/Billing*.dll",
-            "**/bin/Debug/**/Billing*.dll"
-          ],
-          "exclude": [
-            "**/*.AppHost.dll"
+            "**/Billing/bin/Debug/**/Billing.dll",
+            "**/Billing.Api/bin/Debug/**/Billing.Api.dll",
+            "**/Billing.BackOffice/bin/Debug/**/Billing.BackOffice.dll",
+            "**/Billing.BackOffice.Orleans/bin/Debug/**/Billing.BackOffice.Orleans.dll",
+            "**/Billing.Contracts/bin/Debug/**/Billing.Contracts.dll"
           ]
         }
       ],
-      "output": "api",
+      "output": "reference/",
+      "outputFormat": "markdown",
       "namespaceLayout": "nested",
       "categoryLayout": "nested"
     }
-  ],
-  "build": {
-    "content": [
-      {
-        "files": [
-          "**/*.{md,yml}"
-        ],
-        "exclude": [
-          "_site/**",
-          "obj/**",
-          "bin/**"
-        ]
-      },
-      {
-        "src": "../",
-        "files": [
-          "README.md"
-        ],
-        "dest": ""
-      }
-    ],
-    "resource": [
-      {
-        "files": [
-          "images/**"
-        ]
-      }
-    ],
-    "output": "_site",
-    "template": [
-      "default",
-      "modern",
-      "templates/ms_theme"
-    ],
-    "globalMetadata": {
-      "_appName": "Billing Service",
-      "_appTitle": "Billing Service Documentation",
-      "_enableSearch": true,
-      "_searchIndexUseMetadata": true,
-      "_enableNewTab": true,
-      "pdf": false,
-      "_appLogoPath": "",
-      "_appFaviconPath": "images/favicon.ico",
-      "_gitContribute": {
-        "repo": "https://github.com/your-org/billing-service",
-        "branch": "main"
-      },
-      "_gitUrlPattern": "github"
-    },
-    "fileMetadata": {
-      "_enableSearch": {
-        "content/**/*.md": true,
-        "../README.md": true
-      }
-    }
-  }
+  ]
 }
