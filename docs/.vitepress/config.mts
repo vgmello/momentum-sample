@@ -1,5 +1,6 @@
 import { defineConfig, type MarkdownOptions } from "vitepress";
 import MermaidExample from "./mermaidjs.mjs";
+import { generateReferenceSidebar } from "./tocParser";
 
 const allMarkdownTransformers: MarkdownOptions = {
     theme: {
@@ -95,7 +96,10 @@ export default defineConfig({
                     },
                 ],
             },
-            "/reference": [],
+            "/reference": {
+                base: "/reference/",
+                items: generateReferenceSidebar(),
+            },
         },
 
         socialLinks: [{ icon: "github", link: "https://github.com/" }],
