@@ -4,6 +4,7 @@
         <IsPackable>True</IsPackable>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <VersionSuffix Condition="'$(Configuration)' == 'Debug'">pre</VersionSuffix>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <PropertyGroup>
