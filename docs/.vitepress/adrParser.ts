@@ -33,7 +33,7 @@ export function parseAdrFile(filePath: string): AdrMetadata | null {
 export function generateAdrSidebar(adrDir: string = "arch/adr"): VitePressNavItem {
     const adrSidebar = {
         text: "ADRs",
-        collapsed: false,
+        collapsed: true,
         base: "/arch/adr",
         items: generateAdrSidebarItems(adrDir),
     };

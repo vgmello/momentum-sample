@@ -16,13 +16,13 @@ The fastest way to get started is using .NET Aspire orchestration:
 Make you have the aspire workload installed, you can install using the following command.
 
 ```bash
-dotnet workload install aspire // [!code highlight]
+dotnet workload install aspire
 ```
 
 ```bash
 # Run the entire Billing service stack
-cd Billing/src/Billing.AppHost // [!code highlight]
-dotnet run // [!code highlight]
+cd Billing/src/Billing.AppHost
+dotnet run
 ```
 
 This automatically:
@@ -53,13 +53,13 @@ Run these commands from the `Billing/infra/Billing.Database/` directory:
 cd Billing/infra/Billing.Database/
 
 # Step 1: Setup databases (creates actual dbs)
-liquibase update --defaults-file liquibase.setup.properties // [!code highlight]
+liquibase update --defaults-file liquibase.setup.properties
 
 # Step 2: Service bus schema
-liquibase update --defaults-file liquibase.servicebus.properties // [!code highlight]
+liquibase update --defaults-file liquibase.servicebus.properties
 
 # Step 3: Application schema
-liquibase update // [!code highlight]
+liquibase update
 ```
 
 ### 2. Run Individual Services
@@ -90,21 +90,22 @@ Once the system is running, let's create some billing data:
 First, let's create a cashier who will handle invoice payments:
 
 ```bash
-curl -X POST http://localhost:8101/api/cashiers \ // [!code highlight]
+curl -X POST http://localhost:8101/api/cashiers \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "John Smith", // [!code highlight]
-    "email": "john.smith@billing.com" // [!code highlight]
+    "name": "John Smith",
+    "email": "john.smith@billing.com"
   }'
 ```
 
 Response:
+
 ```json
 {
-  "cashierId": "csh_123456",
-  "name": "John Smith",
-  "email": "john.smith@billing.com",
-  "createdAt": "2025-07-17T10:00:00Z"
+    "cashierId": "csh_123456",
+    "name": "John Smith",
+    "email": "john.smith@billing.com",
+    "createdAt": "2025-07-17T10:00:00Z"
 }
 ```
 
@@ -125,16 +126,17 @@ curl -X POST http://localhost:8101/api/invoices \
 ```
 
 Response:
+
 ```json
 {
-  "invoiceId": "inv_789012",
-  "name": "Invoice for Services Q1",
-  "status": "Draft",
-  "amount": 1500.00,
-  "currency": "USD",
-  "dueDate": "2025-08-17",
-  "cashierId": "csh_123456",
-  "createdAt": "2025-07-17T10:05:00Z"
+    "invoiceId": "inv_789012",
+    "name": "Invoice for Services Q1",
+    "status": "Draft",
+    "amount": 1500.0,
+    "currency": "USD",
+    "dueDate": "2025-08-17",
+    "cashierId": "csh_123456",
+    "createdAt": "2025-07-17T10:05:00Z"
 }
 ```
 
@@ -152,6 +154,7 @@ curl -X POST http://localhost:8101/api/invoices/inv_789012/payment \
 ```
 
 This triggers the event-driven workflow that:
+
 1. Publishes a `PaymentReceived` event
 2. Back office handler processes the payment
 3. Invoice status updates to "Paid"
@@ -170,29 +173,33 @@ curl http://localhost:8101/api/invoices/inv_789012
 ### OpenAPI Documentation
 
 Visit http://localhost:8101/scalar to explore all available endpoints:
-- **Cashiers API**: CRUD operations for cashier management
-- **Invoices API**: Invoice lifecycle management
-- **Bills API**: Coming soon
+
+-   **Cashiers API**: CRUD operations for cashier management
+-   **Invoices API**: Invoice lifecycle management
+-   **Bills API**: Coming soon
 
 ### Event Monitoring
 
 The system publishes integration events for key operations:
-- `CashierCreated`, `CashierUpdated`, `CashierDeleted`
-- `InvoiceCreated`, `InvoiceCancelled`, `InvoicePaid`
-- `PaymentReceived`
+
+-   `CashierCreated`, `CashierUpdated`, `CashierDeleted`
+-   `InvoiceCreated`, `InvoiceCancelled`, `InvoicePaid`
+-   `PaymentReceived`
 
 ### Database Inspection
 
 Connect to PostgreSQL to explore the schema:
+
 ```bash
 psql -h localhost -p 5432 -U postgres -d billing
 \dt billing.*  # List all billing tables
 ```
 
 Key tables:
-- `billing.cashiers` - Cashier records
-- `billing.invoices` - Invoice records
-- `billing.cashier_payments` - Payment history
+
+-   `billing.cashiers` - Cashier records
+-   `billing.invoices` - Invoice records
+-   `billing.cashier_payments` - Payment history
 
 ## Next Steps
 
@@ -205,6 +212,7 @@ Now that you have the Billing Solution running:
 5. **Debug the System**: Set breakpoints in command handlers
 
 For deeper dives:
-- [Cashiers Documentation](/guide/cashiers/)
-- [Invoices Documentation](/guide/invoices/)
-- [Architecture Overview](/arch/)
+
+-   [Cashiers Documentation](/guide/cashiers/)
+-   [Invoices Documentation](/guide/invoices/)
+-   [Architecture Overview](/arch/)

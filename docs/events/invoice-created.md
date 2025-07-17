@@ -1,8 +1,8 @@
 # InvoiceCreated
 
-**Status:** Active  
-**Version:** v1  
-**Topic:** `invoices`  
+**Status:** Active
+**Version:** v1
+**Topic:** `invoices`
 **Type:** Integration Event
 
 ## Description
@@ -12,15 +12,16 @@ Published when a new invoice is successfully created in the billing system. This
 ## When It's Triggered
 
 This event is published when:
-- A new invoice is created via the `CreateInvoiceCommand`
-- The invoice creation process completes successfully
-- All invoice validation and business rules have been satisfied
+
+-   A new invoice is created via the `CreateInvoiceCommand`
+-   The invoice creation process completes successfully
+-   All invoice validation and business rules have been satisfied
 
 ## Event Payload
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| Invoice | `Invoice` | ✓ | Complete invoice object containing all invoice data including items, amounts, customer information, and metadata |
+| Property | Type      | Required | Description                                                                                                      |
+| -------- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| Invoice  | `Invoice` | ✓        | Complete invoice object containing all invoice data including items, amounts, customer information, and metadata |
 
 ### Invoice Object Structure
 
@@ -30,13 +31,13 @@ The `Invoice` object contains the full invoice entity with all its properties an
 
 ```csharp
 // Event Definition
-[EventTopic<Invoice>] // [!code highlight]
-public sealed record InvoiceCreated(Invoice Invoice) 
-    : IntegrationEvent<InvoiceCreated>; // [!code highlight]
+[EventTopic<Invoice>]
+public sealed record InvoiceCreated(Invoice Invoice)
+    : IntegrationEvent<InvoiceCreated>;
 ```
 
-- **Full Type:** `Billing.Invoices.Contracts.IntegrationEvents.InvoiceCreated`
-- **Namespace:** `Billing.Invoices.Contracts.IntegrationEvents`
-- **Topic Attribute:** `[EventTopic<Invoice>]`
-- **Payload Type:** Record with positional parameter
-- **Partition Key:** Derived from Invoice entity properties
+-   **Full Type:** `Billing.Invoices.Contracts.IntegrationEvents.InvoiceCreated`
+-   **Namespace:** `Billing.Invoices.Contracts.IntegrationEvents`
+-   **Topic Attribute:** `[EventTopic<Invoice>]`
+-   **Payload Type:** Record with positional parameter
+-   **Partition Key:** Derived from Invoice entity properties

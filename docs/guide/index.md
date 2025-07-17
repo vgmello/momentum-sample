@@ -15,6 +15,31 @@ This codebase follows a real-world mirroring approach:
 -   **Simple Records**: Invoices and cashiers are data records, not smart objects
 -   **Clear Separation**: Front office (sync APIs) vs back office (async processing)
 
+## Project Structure
+
+```
+.
+├── docs/                            # DocFX documentation system
+├── infra/                           # Infrastructure and database
+│   └── Billing.Database/            # Liquibase Database project
+├── src/                             # Source code projects
+│   ├── Billing/                     # Domain logic
+│   ├── Billing.Api/                 # REST/gRPC endpoints
+│   ├── Billing.AppHost/             # .NET Aspire orchestration
+│   ├── Billing.BackOffice/          # Background processing
+│   ├── Billing.BackOffice.Orleans/  # Orleans stateful processing
+│   └── Billing.Contracts/           # Integration events and models
+├── tests/                           # Testing projects
+│   └── Billing.Tests/               # Unit, Integration, and Architecture tests
+└── libs/                            # Shared libraries
+    └── Operations/                  # Operations libs
+        ├── src/                     # Platform source code
+        │   ├── Operations.Extensions.*
+        │   ├── Operations.ServiceDefaults.*
+        │   └── ...
+        └── tests/                   # Platform tests
+```
+
 ## Core Domains
 
 ### Cashiers
@@ -103,31 +128,6 @@ Ready to begin? Follow our comprehensive getting started guide:
 -   [CQRS Implementation](/arch/cqrs)
 -   [Error Handling Patterns](/arch/error-handling)
 -   [Testing Strategies](/arch/testing)
-
-## Project Structure
-
-```
-.
-├── docs/                            # DocFX documentation system
-├── infra/                           # Infrastructure and database
-│   └── Billing.Database/            # Liquibase Database project
-├── src/                             # Source code projects
-│   ├── Billing/                     # Domain logic
-│   ├── Billing.Api/                 # REST/gRPC endpoints
-│   ├── Billing.AppHost/             # .NET Aspire orchestration
-│   ├── Billing.BackOffice/          # Background processing
-│   ├── Billing.BackOffice.Orleans/  # Orleans stateful processing
-│   └── Billing.Contracts/           # Integration events and models
-├── tests/                           # Testing projects
-│   └── Billing.Tests/               # Unit, Integration, and Architecture tests
-└── libs/                            # Shared libraries
-    └── Operations/                  # Operations libs
-        ├── src/                     # Platform source code
-        │   ├── Operations.Extensions.*
-        │   ├── Operations.ServiceDefaults.*
-        │   └── ...
-        └── tests/                   # Platform tests
-```
 
 The design makes the codebase intuitive for developers, product teams, and even AI assistants to understand and work with.
 

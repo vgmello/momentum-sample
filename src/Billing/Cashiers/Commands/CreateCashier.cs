@@ -22,7 +22,7 @@ public class CreateCashierValidator : AbstractValidator<CreateCashierCommand>
 public static partial class CreateCashierCommandHandler
 {
     [DbCommand(sp: "billing.cashiers_create", nonQuery: true)]
-    public partial record InsertCashierCommand(Guid CashierId, string Name, string? Email) : ICommand<int>;
+    public partial record DbCommand(Guid CashierId, string Name, string? Email) : ICommand<int>;
 
     public static async Task<(Result<CashierModel>, CashierCreated?)> Handle(CreateCashierCommand command, IMessageBus messaging,
         CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ public static partial class CreateCashierCommandHandler
 
         var cashierId = Guid.CreateVersion7();
 
-        var insertCommand = new InsertCashierCommand(cashierId, command.Name, command.Email);
+        var insertCommand = new DbCommand(cashierId, command.Name, command.Email);
 
         await messaging.InvokeCommandAsync(insertCommand, cancellationToken);
 

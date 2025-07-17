@@ -1,21 +1,22 @@
 ---
-title: DbCommand Usage Guide - Running Database Queries and Commands
-description: Complete guide to using DbCommand for database operations with practical examples from the billing domain implementation.
-ms.date: 01/27/2025
+title: Running Database Queries and Commands
 ---
 
 # DbCommand Usage Guide - Running Database Queries and Commands
 
-This guide provides comprehensive coverage of using the `DbCommand` attribute to run queries and commands on the database, based on real implementations from the billing domain. The `DbCommand` attribute works with source generators to automatically create database handlers, parameter mapping, and integrate seamlessly with the Wolverine messaging framework.
+This guide provides comprehensive coverage of using the `DbCommand` attribute to run queries and commands on the database.
 
 ## Overview
 
-The `DbCommand` attribute is a powerful tool that:
-- Automatically generates database parameter mapping via `ToDbParams()` methods
-- Creates command handlers for database operations using Dapper
-- Integrates with the Wolverine messaging framework
-- Supports stored procedures, raw SQL, and database functions
-- Provides flexible parameter naming conventions
+The `DbCommand` attribute works with source generators to automatically create database handlers, parameter mapping, and integrate seamlessly with the Wolverine messaging framework.
+
+Key features:
+
+-   Automatically generates database parameter mapping via `ToDbParams()` methods
+-   Source generates command handlers for database operations using Dapper
+-   Integrates with the Wolverine messaging framework
+-   Supports stored procedures, raw SQL, and database functions
+-   Provides flexible parameter naming conventions
 
 ## Basic Concepts
 
@@ -23,11 +24,11 @@ The `DbCommand` attribute is a powerful tool that:
 
 ```csharp
 [DbCommand(
-    sp: "stored_procedure_name",        // Stored procedure (mutually exclusive) // [!code highlight]
-    sql: "SELECT * FROM table",         // Raw SQL query (mutually exclusive) // [!code highlight]
-    fn: "SELECT * FROM function",       // Function call (mutually exclusive) // [!code highlight]
-    paramsCase: DbParamsCase.SnakeCase, // Parameter naming convention // [!code highlight]
-    nonQuery: true,                     // Whether it's a non-query operation // [!code highlight]
+    sp: "stored_procedure_name",        // Stored procedure (mutually exclusive)
+    sql: "SELECT * FROM table",         // Raw SQL query (mutually exclusive)
+    fn: "SELECT * FROM function",       // Function call (mutually exclusive)
+    paramsCase: DbParamsCase.SnakeCase, // Parameter naming convention
+    nonQuery: true,                     // Whether it's a non-query operation
     dataSource: "connectionKey"         // Data source key for multi-DB scenarios
 )]
 ```
@@ -36,9 +37,9 @@ The `DbCommand` attribute is a powerful tool that:
 
 The `DbParamsCase` enum controls how C# property names are converted to database parameters:
 
-- **`None`**: Uses property names as-is (default)
-- **`SnakeCase`**: Converts `PropertyName` to `property_name`
-- **`Unset`**: Uses global MSBuild property `DbCommandDefaultParamCase`
+-   **`None`**: Uses property names as-is (default)
+-   **`SnakeCase`**: Converts `PropertyName` to `property_name`
+-   **`Unset`**: Uses global MSBuild property `DbCommandDefaultParamCase`
 
 ### Custom Parameter Names
 
@@ -67,14 +68,15 @@ public partial record InsertInvoiceCommand(
     Guid InvoiceId,
     string Name,
     string Status,
-    decimal Amount, // [!code highlight]
+    decimal Amount,
     string? Currency,
     DateTime? DueDate,
     Guid? CashierId
 ) : ICommand<int>; // [!code highlight]
 ```
 
-**Generated Handler:**
+**Source Generated Handler:**
+
 ```csharp
 public static class InsertInvoiceCommandHandler
 {
@@ -85,8 +87,8 @@ public static class InsertInvoiceCommandHandler
     {
         await using var connection = await datasource.OpenConnectionAsync(cancellationToken);
         var dbParams = command.ToDbParams(); // [!code highlight]
-        return await SqlMapper.ExecuteAsync(connection, 
-            new CommandDefinition("billing.invoices_create", dbParams, 
+        return await SqlMapper.ExecuteAsync(connection,
+            new CommandDefinition("billing.invoices_create", dbParams,
                 commandType: CommandType.StoredProcedure, // [!code highlight]
                 cancellationToken: cancellationToken));
     }
@@ -127,7 +129,7 @@ Commands integrate with the Wolverine messaging framework:
 ```csharp
 // From: src/Billing/Invoices/Commands/CreateInvoice.cs:43-78
 public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
-    CreateInvoiceCommand command, 
+    CreateInvoiceCommand command,
     IMessageBus messaging,
     CancellationToken cancellationToken)
 {
@@ -150,7 +152,7 @@ public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
     // Return domain model and integration event
     var result = new InvoiceModel { /* ... */ };
     var createdEvent = new InvoiceCreated(result);
-    
+
     return (result, createdEvent);
 }
 ```
@@ -169,7 +171,8 @@ Retrieve a single record with automatic mapping:
 public partial record GetInvoiceDbQuery(Guid InvoiceId) : IQuery<InvoiceModel?>;
 ```
 
-**Generated Handler:**
+**Source Generated Handler:**
+
 ```csharp
 public static class GetInvoiceDbQueryHandler
 {
@@ -181,7 +184,7 @@ public static class GetInvoiceDbQueryHandler
         await using var connection = await datasource.OpenConnectionAsync(cancellationToken);
         var dbParams = command.ToDbParams();
         return await SqlMapper.QueryFirstOrDefaultAsync<InvoiceModel>(connection,
-            new CommandDefinition("select * from billing.invoices_get_single(@InvoiceId)", 
+            new CommandDefinition("select * from billing.invoices_get_single(@InvoiceId)",
                 dbParams, commandType: CommandType.Text, cancellationToken: cancellationToken));
     }
 }
@@ -195,13 +198,14 @@ Retrieve collections with pagination support:
 // From: src/Billing/Invoices/Queries/GetInvoices.cs:13-14
 [DbCommand(fn: "select * from billing.invoices_get")]
 public partial record GetInvoicesDbQuery(
-    int Limit, 
-    int Offset, 
+    int Limit,
+    int Offset,
     string? Status
 ) : IQuery<IEnumerable<InvoiceModel>>;
 ```
 
-**Generated Handler:**
+**Source Generated Handler:**
+
 ```csharp
 public static class GetInvoicesDbQueryHandler
 {
@@ -213,7 +217,7 @@ public static class GetInvoicesDbQueryHandler
         await using var connection = await datasource.OpenConnectionAsync(cancellationToken);
         var dbParams = command.ToDbParams();
         return await SqlMapper.QueryAsync<InvoiceModel>(connection,
-            new CommandDefinition("select * from billing.invoices_get(@Limit, @Offset, @Status)", 
+            new CommandDefinition("select * from billing.invoices_get(@Limit, @Offset, @Status)",
                 dbParams, commandType: CommandType.Text, cancellationToken: cancellationToken));
     }
 }
@@ -230,6 +234,7 @@ private sealed partial record DbCommand([Column("id")] Guid CashierId);
 ```
 
 **Generated `ToDbParams()` method:**
+
 ```csharp
 public object ToDbParams()
 {
@@ -252,6 +257,7 @@ private sealed partial record DbCommand(int Limit, int Offset);
 ```
 
 With `DbParamsCase.SnakeCase`, this generates:
+
 ```csharp
 public object ToDbParams()
 {
@@ -274,7 +280,7 @@ The source generator creates different Dapper method calls based on result types
 // For ICommand<int> with nonQuery: true
 return await SqlMapper.ExecuteAsync(connection, commandDefinition);
 
-// For ICommand<int> with nonQuery: false  
+// For ICommand<int> with nonQuery: false
 return await SqlMapper.ExecuteScalarAsync<int>(connection, commandDefinition);
 
 // For IQuery<MyType>
@@ -303,7 +309,7 @@ Implement proper error handling and validation:
 ```csharp
 // From: src/Billing/Invoices/Commands/CancelInvoice.cs:26-54
 public static async Task<(Result<InvoiceModel>, InvoiceCancelled?)> Handle(
-    CancelInvoiceCommand command, 
+    CancelInvoiceCommand command,
     IMessageBus messaging,
     CancellationToken cancellationToken)
 {
@@ -312,9 +318,9 @@ public static async Task<(Result<InvoiceModel>, InvoiceCancelled?)> Handle(
 
     if (rowsAffected == 0)
     {
-        var failures = new List<ValidationFailure> 
-        { 
-            new("InvoiceId", "Invoice not found or cannot be cancelled") 
+        var failures = new List<ValidationFailure>
+        {
+            new("InvoiceId", "Invoice not found or cannot be cancelled")
         };
         return (failures, null);
     }
@@ -341,7 +347,7 @@ public static async Task<Result<ComplexOperation>> Handle(
     await messaging.InvokeCommandAsync(new CreateInvoiceCommand(...), cancellationToken);
     await messaging.InvokeCommandAsync(new UpdateCustomerCommand(...), cancellationToken);
     await messaging.InvokeCommandAsync(new LogActivityCommand(...), cancellationToken);
-    
+
     // If any operation fails, the entire transaction is rolled back
     return Result.Success();
 }
@@ -375,19 +381,19 @@ public partial record InsertInvoiceCommand(
 
 // Handler Implementation
 public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
-    CreateInvoiceCommand command, 
+    CreateInvoiceCommand command,
     IMessageBus messaging,
     CancellationToken cancellationToken)
 {
     var invoiceId = Guid.CreateVersion7();
-    
+
     // Execute database operation
     var insertCommand = new InsertInvoiceCommand(
-        invoiceId, command.Name, "Draft", command.Amount, 
+        invoiceId, command.Name, "Draft", command.Amount,
         command.Currency, command.DueDate, command.CashierId);
-    
+
     await messaging.InvokeCommandAsync(insertCommand, cancellationToken);
-    
+
     // Build response
     var result = new InvoiceModel
     {
@@ -402,7 +408,7 @@ public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
         UpdatedDateUtc = DateTime.UtcNow,
         Version = 1
     };
-    
+
     var createdEvent = new InvoiceCreated(result);
     return (result, createdEvent);
 }
@@ -413,22 +419,22 @@ public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
 ```csharp
 // Domain Query
 public record GetInvoicesQuery(
-    int Limit = 50, 
-    int Offset = 0, 
+    int Limit = 50,
+    int Offset = 0,
     string? Status = null
 ) : IQuery<IEnumerable<InvoiceModel>>;
 
 // Database Query
 [DbCommand(fn: "select * from billing.invoices_get")]
 public partial record GetInvoicesDbQuery(
-    int Limit, 
-    int Offset, 
+    int Limit,
+    int Offset,
     string? Status
 ) : IQuery<IEnumerable<InvoiceModel>>;
 
 // Handler Implementation
 public static async Task<IEnumerable<InvoiceModel>> Handle(
-    GetInvoicesQuery query, 
+    GetInvoicesQuery query,
     IMessageBus messaging,
     CancellationToken cancellationToken)
 {
@@ -446,23 +452,23 @@ public static async Task<IEnumerable<InvoiceModel>> Handle(
 private sealed partial record DbCommand([Column("id")] Guid CashierId);
 
 public static async Task<Cashier> Handle(
-    GetCashierQuery query, 
-    NpgsqlDataSource dataSource, 
+    GetCashierQuery query,
+    NpgsqlDataSource dataSource,
     CancellationToken cancellationToken)
 {
     await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-    
+
     const string sql = "SELECT cashier_id, name, email FROM billing.cashiers WHERE cashier_id = @id";
-    
+
     var cashier = await connection.QuerySingleOrDefaultAsync<Data.Entities.Cashier>(
-        sql, 
+        sql,
         new DbCommand(query.Id).ToDbParams());
-    
+
     if (cashier is null)
     {
         throw new InvalidOperationException($"Cashier with ID {query.Id} not found");
     }
-    
+
     return new Cashier
     {
         CashierId = cashier.CashierId,
@@ -476,70 +482,39 @@ public static async Task<Cashier> Handle(
 
 ### 1. Handler Organization
 
-- **Separate Domain and Database Commands**: Keep business logic separate from database operations
-- **Use Partial Classes**: Leverage `partial` keyword for generated handlers
-- **Nest Database Commands**: Place database command records inside handler classes
+-   **Separate Domain and Database Commands**: Keep business logic separate from database operations
+-   **Use Partial Classes**: Leverage `partial` keyword for generated handlers
+-   **Nest Database Commands**: Place database command records inside handler classes
 
 ### 2. Parameter Naming
 
-- **Use Consistent Conventions**: Choose between `None` and `SnakeCase` consistently
-- **Override When Needed**: Use `[Column]` attribute for legacy database compatibility
-- **Global Configuration**: Set `DbCommandDefaultParamCase` MSBuild property
+-   **Use Consistent Conventions**: Choose between `None` and `SnakeCase` consistently
+-   **Override When Needed**: Use `[Column]` attribute for legacy database compatibility
+-   **Global Configuration**: Set `DbCommandDefaultParamCase` MSBuild property
 
 ### 3. Error Handling
 
-- **Validate Input**: Use FluentValidation for command validation
-- **Handle Not Found**: Check for null results in queries
-- **Return Meaningful Errors**: Use Result pattern for error propagation
+-   **Validate Input**: Use FluentValidation for command validation
+-   **Handle Not Found**: Check for null results in queries
+-   **Return Meaningful Errors**: Use Result pattern for error propagation
 
 ### 4. Performance Considerations
 
-- **Use Appropriate Methods**: Choose between `QueryFirstOrDefault` and `QuerySingle`
-- **Limit Query Results**: Always implement pagination for list queries
-- **Connection Management**: Let the framework handle connection lifecycle
+-   **Use Appropriate Methods**: Choose between `QueryFirstOrDefault` and `QuerySingle`
+-   **Limit Query Results**: Always implement pagination for list queries
+-   **Connection Management**: Let the framework handle connection lifecycle
 
 ### 5. Testing Strategies
 
-- **Unit Test Handlers**: Test business logic separately from database operations
-- **Integration Test Commands**: Test complete database operations
-- **Mock Database**: Use test doubles for external dependencies
+-   **Unit Test Handlers**: Test business logic separately from database operations
+-   **Integration Test Commands**: Test complete database operations
+-   **Mock Database**: Use test doubles for external dependencies
 
 ## Common Patterns and Anti-Patterns
 
 ### ✅ Good Patterns
 
-```csharp
-// Separate domain and database concerns
-public record CreateUserCommand(string Name, string Email) : ICommand<Result<User>>;
-
-[DbCommand(sp: "users.create", nonQuery: true)]
-public partial record CreateUserDbCommand(string Name, string Email) : ICommand<int>;
-
-// Use messaging framework for database operations
-await messaging.InvokeCommandAsync(dbCommand, cancellationToken);
-
-// Return domain events for integration
-return (result, new UserCreated(result.Id));
-```
-
 ### ❌ Anti-Patterns
-
-```csharp
-// DON'T: Mix domain logic with database operations
-[DbCommand(sp: "users.create", nonQuery: true)]
-public partial record CreateUserCommand(string Name, string Email) : ICommand<int>;
-
-// DON'T: Use database commands directly in API controllers
-public async Task<IActionResult> CreateUser(CreateUserDbCommand command)
-{
-    var result = await command.HandleAsync(dataSource, cancellationToken);
-    return Ok(result);
-}
-
-// DON'T: Ignore error handling
-var result = await messaging.InvokeCommandAsync(command, cancellationToken);
-// Missing: Check if operation succeeded
-```
 
 ## Integration with Wolverine Framework
 
@@ -555,15 +530,7 @@ await messaging.InvokeQueryAsync(new GetInvoiceQuery(...), cancellationToken);
 
 ### Automatic Handler Discovery
 
-The source generator creates handlers that are automatically discovered by Wolverine:
-
-```csharp
-// Generated handler is automatically registered
-public static class CreateInvoiceCommandHandler
-{
-    public static async Task<int> HandleAsync(/* ... */) { /* ... */ }
-}
-```
+The source generator creates handlers that are automatically discovered by Wolverine.
 
 ### Transaction Management
 
@@ -583,7 +550,7 @@ public static async Task<Result> Handle(ComplexCommand command, IMessageBus mess
 
 ### MSBuild Configuration
 
-Set global parameter case convention:
+Set global parameter case convention, if needed (usually for Postgres users):
 
 ```xml
 <PropertyGroup>
@@ -596,10 +563,10 @@ Set global parameter case convention:
 Register multiple data sources:
 
 ```csharp
-services.AddKeyedSingleton<DbDataSource>("BillingDb", sp => 
+services.AddKeyedSingleton<DbDataSource>("BillingDb", sp =>
     NpgsqlDataSource.Create(connectionString));
 
-services.AddKeyedSingleton<DbDataSource>("AnalyticsDb", sp => 
+services.AddKeyedSingleton<DbDataSource>("AnalyticsDb", sp =>
     NpgsqlDataSource.Create(analyticsConnectionString));
 ```
 
@@ -615,18 +582,20 @@ services.AddKeyedSingleton<DbDataSource>("AnalyticsDb", sp =>
 ### Debugging Generated Code
 
 View generated code in Visual Studio:
-- Go to **Project Properties** → **Build** → **Advanced** → **Debugging Information** → **Full**
-- Generated files appear in **Dependencies** → **Analyzers** → **Operations.Extensions.SourceGenerators**
+
+-   Go to **Project Properties** → **Build** → **Advanced** → **Debugging Information** → **Full**
+-   Generated files appear in **Dependencies** → **Analyzers** → **Operations.Extensions.SourceGenerators**
 
 ## Summary
 
 The DbCommand attribute provides a powerful, type-safe way to interact with databases while maintaining clean separation of concerns. By leveraging source generation, it eliminates boilerplate code while providing full control over database operations. The integration with Wolverine's messaging framework ensures transactional consistency and enables event-driven architecture patterns.
 
 Key benefits:
-- **Reduced Boilerplate**: Automatic parameter mapping and handler generation
-- **Type Safety**: Compile-time validation of database operations
-- **Flexible Configuration**: Support for multiple databases and naming conventions
-- **Framework Integration**: Seamless integration with Wolverine messaging
-- **Performance**: Built on Dapper for optimal database performance
+
+-   **Reduced Boilerplate**: Automatic parameter mapping and handler generation
+-   **Type Safety**: Compile-time validation of database operations
+-   **Flexible Configuration**: Support for multiple databases and naming conventions
+-   **Framework Integration**: Seamless integration with Wolverine messaging
+-   **Performance**: Built on Dapper for optimal database performance
 
 Use this guide as a reference for implementing database operations in your applications, and refer to the billing domain examples for real-world usage patterns.

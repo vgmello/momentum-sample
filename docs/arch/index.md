@@ -78,8 +78,8 @@ Core business objects that represent real-world concepts:
 // Cashier entity with business identity
 public record Cashier
 {
-    public required Guid TenantId { get; init; } // [!code highlight]
-    public required Ulid CashierId { get; init; } // [!code highlight]
+    public required Guid TenantId { get; init; }
+    public required Ulid CashierId { get; init; }
     public required string Name { get; init; }
     public required string Email { get; init; }
     public List<CashierPayment> CashierPayments { get; init; } = [];
@@ -91,8 +91,8 @@ public record Cashier
 Immutable objects that describe aspects of the domain:
 
 ```csharp
-public record Money(decimal Amount, Currency Currency); // [!code highlight]
-public record Currency(string Code, string Symbol); // [!code highlight]
+public record Money(decimal Amount, Currency Currency);
+public record Currency(string Code, string Symbol);
 ```
 
 ### Domain Events
@@ -100,8 +100,8 @@ public record Currency(string Code, string Symbol); // [!code highlight]
 Events that represent business state changes:
 
 ```csharp
-public record CashierCreated(Ulid CashierId, string Name, string Email); // [!code highlight]
-public record InvoicePaid(Ulid InvoiceId, DateTime PaidAt, decimal Amount); // [!code highlight]
+public record CashierCreated(Ulid CashierId, string Name, string Email);
+public record InvoicePaid(Ulid InvoiceId, DateTime PaidAt, decimal Amount);
 ```
 
 ## Application Layer
@@ -125,14 +125,14 @@ Location: [`src/Billing/*/Commands/`](https://github.com/yourusername/billing/tr
 ### Command Example
 
 ```csharp
-[DbCommand(sp: "billing.invoices_create")] // [!code highlight]
+[DbCommand(sp: "billing.invoices_create")]
 public record CreateInvoiceCommand : IRequest<Result<Invoice>>
 {
     public required string Name { get; init; }
-    public required decimal Amount { get; init; } // [!code highlight]
+    public required decimal Amount { get; init; }
     public required string Currency { get; init; }
     public required DateOnly DueDate { get; init; }
-    public required Ulid CashierId { get; init; } // [!code highlight]
+    public required Ulid CashierId { get; init; }
 }
 ```
 
@@ -147,10 +147,10 @@ public partial class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoice
     public async Task<Result<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
     {
         // Generated database call
-        var invoice = await ExecuteStoredProcedure(request); // [!code highlight]
+        var invoice = await ExecuteStoredProcedure(request);
 
         // Generated event publishing
-        await PublishEvent(new InvoiceCreated(invoice.InvoiceId, invoice.Name, invoice.Amount)); // [!code highlight]
+        await PublishEvent(new InvoiceCreated(invoice.InvoiceId, invoice.Name, invoice.Amount));
 
         return Result.Success(invoice);
     }

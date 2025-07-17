@@ -20,28 +20,28 @@ graph TB
             DOMAIN_EVENTS[Domain Events]
             AGGREGATE[Aggregate Root]
         end
-        
+
         subgraph "Application Layer"
             COMMANDS[Commands]
             QUERIES[Queries]
             HANDLERS[Command/Query Handlers]
             INTEGRATION[Integration Events]
         end
-        
+
         subgraph "Infrastructure Layer"
             WOLVERINE[Wolverine Message Bus]
             KAFKA[Kafka Transport]
             POSTGRES[PostgreSQL Persistence]
             OUTBOX[Outbox Pattern]
         end
-        
+
         subgraph "External Services"
             SERVICE_A[Service A]
             SERVICE_B[Service B]
             SERVICE_C[Service C]
         end
     end
-    
+
     DOMAIN --> DOMAIN_EVENTS
     DOMAIN_EVENTS --> HANDLERS
     COMMANDS --> HANDLERS
@@ -53,7 +53,7 @@ graph TB
     KAFKA --> SERVICE_A
     KAFKA --> SERVICE_B
     KAFKA --> SERVICE_C
-    
+
     style DOMAIN fill:#e3f2fd
     style DOMAIN_EVENTS fill:#fff3e0
     style HANDLERS fill:#e8f5e8
@@ -130,10 +130,11 @@ public record InvoiceGenerated(Guid InvoiceId, decimal InvoiceAmount);
 ```
 
 **Characteristics:**
-- Internal to the domain
-- Processed synchronously within the same transaction
-- Used for internal business logic coordination
-- No external dependencies
+
+-   Internal to the domain
+-   Processed synchronously within the same transaction
+-   Used for internal business logic coordination
+-   No external dependencies
 
 #### 2. Integration Events
 
@@ -150,10 +151,11 @@ public record InvoiceCreated(Invoice Invoice);
 ```
 
 **Characteristics:**
-- Cross-service communication
-- Processed asynchronously via message bus
-- Decorated with `[EventTopic<T>]` attribute for automatic routing
-- Follow CloudEvents specification
+
+-   Cross-service communication
+-   Processed asynchronously via message bus
+-   Decorated with `[EventTopic<T>]` attribute for automatic routing
+-   Follow CloudEvents specification
 
 ### Command Handler Pattern
 
@@ -162,7 +164,7 @@ The billing domain demonstrates the command handler pattern with the `CreateInvo
 ```csharp
 // src/Billing/Invoices/Commands/CreateInvoice.cs:43-78
 public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
-    CreateInvoiceCommand command, 
+    CreateInvoiceCommand command,
     IMessageBus messaging,
     CancellationToken cancellationToken)
 {
@@ -202,10 +204,11 @@ public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
 ```
 
 **Key Features:**
-- Returns both the result and integration event
-- Uses database commands for persistence
-- Generates integration events for external communication
-- Implements validation through FluentValidation
+
+-   Returns both the result and integration event
+-   Uses database commands for persistence
+-   Generates integration events for external communication
+-   Implements validation through FluentValidation
 
 ## Messaging Infrastructure
 
@@ -217,14 +220,15 @@ The system automatically discovers integration events using namespace convention
 
 ```csharp
 // libs/Operations/src/Operations.ServiceDefaults/Messaging/Kafka/IntegrationEventsDiscovery.cs:91
-private static bool IsIntegrationEventType(Type messageType) => 
+private static bool IsIntegrationEventType(Type messageType) =>
     messageType.Namespace?.EndsWith(IntegrationEventsNamespace) == true;
 ```
 
 **Discovery Rules:**
-- Events must be in namespaces ending with `.IntegrationEvents`
-- Events must be decorated with `[EventTopic]` attributes
-- Only events with handlers are automatically subscribed
+
+-   Events must be in namespaces ending with `.IntegrationEvents`
+-   Events must be decorated with `[EventTopic]` attributes
+-   Only events with handlers are automatically subscribed
 
 ### Event Topic Configuration
 
@@ -234,16 +238,17 @@ Events are configured using the `EventTopicAttribute`:
 // Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs:8
 [EventTopic<Cashier>]
 public record CashierCreated(
-    [PartitionKey] Guid TenantId, 
-    [PartitionKey] int PartitionKeyTest, 
+    [PartitionKey] Guid TenantId,
+    [PartitionKey] int PartitionKeyTest,
     Cashier Cashier);
 ```
 
 **Configuration Options:**
-- Generic `EventTopic<T>` derives topic from entity type
-- Explicit topic names with `EventTopic("topic-name")`
-- Domain specification for topic routing
-- Partition key attributes for Kafka partitioning
+
+-   Generic `EventTopic<T>` derives topic from entity type
+-   Explicit topic names with `EventTopic("topic-name")`
+-   Domain specification for topic routing
+-   Partition key attributes for Kafka partitioning
 
 ### Topic Naming Convention
 
@@ -254,11 +259,13 @@ The system generates fully qualified topic names following this pattern:
 ```
 
 **Example Topics:**
-- `dev.billing.public.invoices.v1`
-- `prod.billing.internal.cashiers.v1`
-- `test.accounting.public.ledger-entries.v1`
+
+-   `dev.billing.public.invoices.v1`
+-   `prod.billing.internal.cashiers.v1`
+-   `test.accounting.public.ledger-entries.v1`
 
 **Implementation:**
+
 ```csharp
 // libs/Operations/src/Operations.ServiceDefaults/Messaging/Kafka/KafkaIntegrationEventsExtensions.cs:156-177
 private static string GetTopicName(Type messageType, EventTopicAttribute topicAttribute, string env)
@@ -356,10 +363,10 @@ graph TD
         PUB --> OUTBOX[Outbox Pattern]
         OUTBOX --> KAFKA[Kafka Publishing]
         KAFKA --> RESP[Response]
-        
+
         RETRY -.->|On Failure| DLQ[Dead Letter Queue]
         CB -.->|Circuit Open| FALLBACK[Fallback Response]
-        
+
         style MSG fill:#e3f2fd
         style VAL fill:#ffebee
         style LOG fill:#f3e5f5
@@ -418,14 +425,14 @@ graph LR
         KAFKA_PUBLISH[Kafka Publishing]
         OUTBOX_CLEANUP[Outbox Cleanup]
     end
-    
+
     HANDLER --> DB_UPDATE
     DB_UPDATE --> OUTBOX_INSERT
     OUTBOX_INSERT --> COMMIT
     COMMIT --> OUTBOX_PROCESSOR
     OUTBOX_PROCESSOR --> KAFKA_PUBLISH
     KAFKA_PUBLISH --> OUTBOX_CLEANUP
-    
+
     style HANDLER fill:#e3f2fd
     style DB_UPDATE fill:#e8f5e8
     style OUTBOX_INSERT fill:#fff3e0
@@ -434,10 +441,11 @@ graph LR
 ```
 
 **Benefits:**
-- Ensures atomic updates and event publishing
-- Provides at-least-once delivery guarantees
-- Enables event replay and recovery scenarios
-- Maintains transactional consistency
+
+-   Ensures atomic updates and event publishing
+-   Provides at-least-once delivery guarantees
+-   Enables event replay and recovery scenarios
+-   Maintains transactional consistency
 
 ## Partition Key Strategy
 
@@ -449,16 +457,17 @@ The Platform implements a sophisticated partition key strategy for Kafka message
 // Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs:8
 [EventTopic<Cashier>]
 public record CashierCreated(
-    [PartitionKey] Guid TenantId, 
-    [PartitionKey] int PartitionKeyTest, 
+    [PartitionKey] Guid TenantId,
+    [PartitionKey] int PartitionKeyTest,
     Cashier Cashier);
 ```
 
 **Key Features:**
-- Multiple partition keys for composite partitioning
-- Automatic key extraction from event properties
-- Tenant-aware partitioning for multi-tenant scenarios
-- Custom partition key providers for complex scenarios
+
+-   Multiple partition keys for composite partitioning
+-   Automatic key extraction from event properties
+-   Tenant-aware partitioning for multi-tenant scenarios
+-   Custom partition key providers for complex scenarios
 
 ### Partition Key Provider Factory
 
@@ -477,88 +486,100 @@ The Platform implements comprehensive error handling and resilience patterns:
 
 ### Exception Policies
 
-- **Retry Policies**: Exponential backoff for transient failures
-- **Dead Letter Queues**: Persistent storage for failed messages
-- **Circuit Breakers**: Fail-fast patterns for downstream service failures
-- **Timeout Handling**: Configurable timeouts for message processing
+-   **Retry Policies**: Exponential backoff for transient failures
+-   **Dead Letter Queues**: Persistent storage for failed messages
+-   **Circuit Breakers**: Fail-fast patterns for downstream service failures
+-   **Timeout Handling**: Configurable timeouts for message processing
 
 ### Monitoring and Observability
 
-- **Metrics Collection**: Message throughput, latency, and error rates
-- **Distributed Tracing**: End-to-end request correlation
-- **Structured Logging**: Comprehensive audit trails
-- **Health Checks**: Kafka connectivity and message processing health
+-   **Metrics Collection**: Message throughput, latency, and error rates
+-   **Distributed Tracing**: End-to-end request correlation
+-   **Structured Logging**: Comprehensive audit trails
+-   **Health Checks**: Kafka connectivity and message processing health
 
 ## Best Practices
 
 ### Event Design
-- Use immutable records for events
-- Include all necessary data to avoid chatty communication
-- Version events for schema evolution
-- Use meaningful, business-focused event names
+
+-   Use immutable records for events
+-   Include all necessary data to avoid chatty communication
+-   Version events for schema evolution
+-   Use meaningful, business-focused event names
 
 ### Handler Implementation
-- Keep handlers idempotent
-- Handle duplicate messages gracefully
-- Implement proper error handling and retries
-- Use dependency injection for testability
+
+-   Keep handlers idempotent
+-   Handle duplicate messages gracefully
+-   Implement proper error handling and retries
+-   Use dependency injection for testability
 
 ### Topic Management
-- Use consistent naming conventions
-- Implement proper topic versioning
-- Configure appropriate partition counts
-- Monitor topic health and performance
+
+-   Use consistent naming conventions
+-   Implement proper topic versioning
+-   Configure appropriate partition counts
+-   Monitor topic health and performance
 
 ### Security Considerations
-- Implement proper authentication and authorization
-- Use encryption for sensitive data
-- Audit all event processing activities
-- Implement rate limiting and throttling
+
+-   Implement proper authentication and authorization
+-   Use encryption for sensitive data
+-   Audit all event processing activities
+-   Implement rate limiting and throttling
 
 ## Performance Optimization
 
 ### Message Batching
-- Process messages in batches where appropriate
-- Configure optimal batch sizes for throughput
-- Balance latency vs. throughput requirements
+
+-   Process messages in batches where appropriate
+-   Configure optimal batch sizes for throughput
+-   Balance latency vs. throughput requirements
 
 ### Connection Management
-- Use connection pooling for database connections
-- Implement proper connection health monitoring
-- Configure appropriate timeout values
+
+-   Use connection pooling for database connections
+-   Implement proper connection health monitoring
+-   Configure appropriate timeout values
 
 ### Serialization
-- Use efficient serialization formats (System.Text.Json)
-- Implement custom converters for complex types
-- Minimize object allocations during processing
+
+-   Use efficient serialization formats (System.Text.Json)
+-   Implement custom converters for complex types
+-   Minimize object allocations during processing
 
 ## Testing Strategies
 
 ### Unit Testing
-- Test handlers in isolation
-- Mock external dependencies
-- Verify event generation and processing
+
+-   Test handlers in isolation
+-   Mock external dependencies
+-   Verify event generation and processing
 
 ### Integration Testing
-- Test complete message flows
-- Verify event routing and processing
-- Test error scenarios and recovery
+
+-   Test complete message flows
+-   Verify event routing and processing
+-   Test error scenarios and recovery
 
 ### Performance Testing
-- Load test message throughput
-- Monitor resource utilization
-- Test scalability under various loads
+
+-   Load test message throughput
+-   Monitor resource utilization
+-   Test scalability under various loads
 
 ## Migration and Evolution
 
 ### Schema Evolution
-- Design events for backward compatibility
-- Implement version negotiation
-- Use schema registries for complex scenarios
+
+-   Design events for backward compatibility
+-   Implement version negotiation
+-   Use schema registries for complex scenarios
 
 ### Service Migration
-- Implement gradual migration strategies
-- Maintain dual publishing during transitions
-- Monitor and validate migration progress
+
+-   Implement gradual migration strategies
+-   Maintain dual publishing during transitions
+-   Monitor and validate migration progress
 
 This event-driven architecture provides a robust foundation for building scalable, resilient distributed systems with clear separation of concerns and comprehensive observability.

@@ -1,7 +1,6 @@
 ---
 number: ADR-XXX
 title: [Short noun phrase describing the decision]
-
 status: [Proposed | Accepted | Deprecated | Superseded]
 date: [YYYY-MM-DD]
 ---
@@ -10,26 +9,24 @@ date: [YYYY-MM-DD]
 
 ## Context
 
-[Describe the forces at play, including technological, political, social, and project local. These forces are probably in tension, and should be called out. The language in this section is value-neutral. It is simply describing facts.]
-
 [This section should explain:]
-- What is the current situation?
-- What problems are we trying to solve?
-- What constraints or requirements do we have?
-- What are the key business, technical, or operational drivers?
+
+-   What is the current situation?
+-   What problems are we trying to solve?
+-   What constraints or requirements do we have?
+-   What are the key business, technical, or operational drivers?
 
 ## Decision
 
-[Describe our response to these forces. It is stated in full sentences, with active voice. "We will ..."]
-
 [This section should include:]
-- The specific decision being made
-- Key implementation details or parameters
-- Any standards, patterns, or conventions being adopted
-- How this decision addresses the problems stated in the Context
+
+-   The specific decision being made
+-   Key implementation details or parameters
+-   Any standards, patterns, or conventions being adopted
+-   How this decision addresses the problems stated in the Context
 
 ```text
-// [!code highlight]
+
 Example code, configuration, or technical specification
 that demonstrates the decision can be included here
 ```
@@ -40,20 +37,20 @@ that demonstrates the decision can be included here
 
 ### Positive Consequences
 
-- [List the benefits and advantages of this decision]
-- [Include improvements to development experience, performance, maintainability, etc.]
-- [Mention any problems this decision solves]
+-   [List the benefits and advantages of this decision]
+-   [Include improvements to development experience, performance, maintainability, etc.]
+-   [Mention any problems this decision solves]
 
 ### Negative Consequences
 
-- [List the drawbacks, costs, or limitations of this decision]
-- [Include any increased complexity, maintenance burden, or technical debt]
-- [Mention any trade-offs or compromises made]
+-   [List the drawbacks, costs, or limitations of this decision]
+-   [Include any increased complexity, maintenance burden, or technical debt]
+-   [Mention any trade-offs or compromises made]
 
 ### Neutral Consequences
 
-- [List any other effects that are neither clearly positive nor negative]
-- [Include changes to processes, tools, or team practices]
+-   [List any other effects that are neither clearly positive nor negative]
+-   [Include changes to processes, tools, or team practices]
 
 ## Alternatives Considered
 
@@ -61,29 +58,18 @@ that demonstrates the decision can be included here
 
 ### 1. [Alternative Name]
 
-- **Description:** [Brief description of the alternative approach]
-- **Reason for Rejection:** [Why this alternative was not chosen]
+-   **Description:** [Brief description of the alternative approach]
+-   **Reason for Rejection:** [Why this alternative was not chosen]
 
 ### 2. [Alternative Name]
 
-- **Description:** [Brief description of the alternative approach]
-- **Reason for Rejection:** [Why this alternative was not chosen]
-
-## Implementation Notes
-
-[Optional section - include if relevant]
-
-[Any specific guidance, examples, or implementation details that will help teams apply this decision. This might include:]
-- Configuration examples
-- Code patterns or templates
-- Migration steps
-- Rollout strategy
-- Success metrics
+-   **Description:** [Brief description of the alternative approach]
+-   **Reason for Rejection:** [Why this alternative was not chosen]
 
 ## References
 
 [Optional section - include if relevant]
 
-- [Link to related documentation]
-- [Reference to external standards or best practices]
-- [Links to discussions, RFCs, or other relevant resources]
+-   [Link to related documentation]
+-   [Reference to external standards or best practices]
+-   [Links to discussions, RFCs, or other relevant resources]

@@ -5,14 +5,16 @@ The Billing service uses PostgreSQL with a well-defined schema managed through L
 ## Database Architecture
 
 ### Database Structure
-- **Primary Database**: `billing` - Contains domain-specific tables and procedures
-- **Service Bus Database**: `service_bus` - Shared messaging infrastructure
-- **Migration Tool**: Liquibase with hierarchical changelogs
+
+-   **Primary Database**: `billing` - Contains domain-specific tables and procedures
+-   **Service Bus Database**: `service_bus` - Shared messaging infrastructure
+-   **Migration Tool**: Liquibase with hierarchical changelogs
 
 ### Migration Configuration Files
-- `liquibase.properties` - Main domain schema migrations
-- `liquibase.servicebus.properties` - Service bus schema migrations  
-- `liquibase.setup.properties` - Database setup and initialization
+
+-   `liquibase.properties` - Main domain schema migrations
+-   `liquibase.servicebus.properties` - Service bus schema migrations
+-   `liquibase.setup.properties` - Database setup and initialization
 
 ## Core Tables
 
@@ -32,17 +34,19 @@ CREATE TABLE billing.cashiers (
 ```
 
 **Fields:**
-- `id`: Unique identifier (UUID, auto-generated)
-- `name`: Cashier's full name
-- `email`: Unique email address
-- `created_at`: Record creation timestamp
-- `updated_at`: Last modification timestamp
-- `version`: Optimistic concurrency control version
+
+-   `id`: Unique identifier (UUID, auto-generated)
+-   `name`: Cashier's full name
+-   `email`: Unique email address
+-   `created_at`: Record creation timestamp
+-   `updated_at`: Last modification timestamp
+-   `version`: Optimistic concurrency control version
 
 **Indexes:**
-- Primary key on `id`
-- Unique index on `email`
-- Index on `created_at` for time-based queries
+
+-   Primary key on `id`
+-   Unique index on `email`
+-   Index on `created_at` for time-based queries
 
 ### billing.cashier_currencies
 
@@ -59,16 +63,18 @@ CREATE TABLE billing.cashier_currencies (
 ```
 
 **Fields:**
-- `id`: Unique identifier
-- `cashier_id`: Foreign key to cashiers table
-- `currency_code`: ISO 4217 currency code (USD, EUR, etc.)
-- `is_active`: Whether this currency is currently active
-- `created_at`: Record creation timestamp
+
+-   `id`: Unique identifier
+-   `cashier_id`: Foreign key to cashiers table
+-   `currency_code`: ISO 4217 currency code (USD, EUR, etc.)
+-   `is_active`: Whether this currency is currently active
+-   `created_at`: Record creation timestamp
 
 **Indexes:**
-- Primary key on `id`
-- Foreign key index on `cashier_id`
-- Composite index on `(cashier_id, currency_code)`
+
+-   Primary key on `id`
+-   Foreign key index on `cashier_id`
+-   Composite index on `(cashier_id, currency_code)`
 
 ### billing.invoices
 
@@ -89,22 +95,24 @@ CREATE TABLE billing.invoices (
 ```
 
 **Fields:**
-- `id`: Unique identifier
-- `cashier_id`: Optional foreign key to cashiers table
-- `amount`: Invoice amount with 4 decimal precision
-- `currency_code`: ISO 4217 currency code
-- `status`: Invoice status (Pending, Paid, Cancelled, etc.)
-- `metadata`: Flexible JSONB field for additional data
-- `created_at`: Record creation timestamp
-- `updated_at`: Last modification timestamp
-- `version`: Optimistic concurrency control version
+
+-   `id`: Unique identifier
+-   `cashier_id`: Optional foreign key to cashiers table
+-   `amount`: Invoice amount with 4 decimal precision
+-   `currency_code`: ISO 4217 currency code
+-   `status`: Invoice status (Pending, Paid, Cancelled, etc.)
+-   `metadata`: Flexible JSONB field for additional data
+-   `created_at`: Record creation timestamp
+-   `updated_at`: Last modification timestamp
+-   `version`: Optimistic concurrency control version
 
 **Indexes:**
-- Primary key on `id`
-- Index on `cashier_id`
-- Index on `status` for status-based queries
-- Index on `created_at` for time-based queries
-- GIN index on `metadata` for JSONB queries
+
+-   Primary key on `id`
+-   Index on `cashier_id`
+-   Index on `status` for status-based queries
+-   Index on `created_at` for time-based queries
+-   GIN index on `metadata` for JSONB queries
 
 ## Stored Procedures
 
@@ -141,7 +149,7 @@ BEGIN
     RETURN QUERY
     INSERT INTO billing.cashiers (name, email)
     VALUES (TRIM(p_name), LOWER(TRIM(p_email))) // [!code highlight]
-    RETURNING 
+    RETURNING
         billing.cashiers.id,
         billing.cashiers.name,
         billing.cashiers.email,
@@ -153,17 +161,20 @@ $$;
 ```
 
 **Parameters:**
-- `p_name`: Cashier name (validated for non-empty)
-- `p_email`: Cashier email (validated and normalized to lowercase)
+
+-   `p_name`: Cashier name (validated for non-empty)
+-   `p_email`: Cashier email (validated and normalized to lowercase)
 
 **Returns:**
-- Complete cashier record with generated fields
+
+-   Complete cashier record with generated fields
 
 **Features:**
-- Input validation and sanitization
-- Automatic timestamp generation
-- Atomic operation with rollback on error
-- Consistent error handling
+
+-   Input validation and sanitization
+-   Automatic timestamp generation
+-   Atomic operation with rollback on error
+-   Consistent error handling
 
 ## Service Bus Schema
 
@@ -212,29 +223,12 @@ public partial class GetCashierQuery
 ```
 
 This generates:
-- Parameter binding methods
-- Result mapping logic
-- Compile-time validation
 
-### Entity Framework Integration
+-   Parameter binding methods
+-   Result mapping logic
+-   Compile-time validation
 
-For complex queries and relationships:
-
-```csharp
-public class BillingDbContext : DbContext
-{
-    public DbSet<Cashier> Cashiers { get; set; } // [!code highlight]
-    public DbSet<Invoice> Invoices { get; set; } // [!code highlight]
-    
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Cashier>()
-            .HasMany(c => c.Invoices)
-            .WithOne(i => i.Cashier)
-            .HasForeignKey(i => i.CashierId); // [!code highlight]
-    }
-}
-```
+````
 
 ## Migration Management
 
@@ -243,31 +237,31 @@ public class BillingDbContext : DbContext
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog">
-    
+
     <!-- Include domain-specific changelogs -->
     <include file="billing/changelog.xml" relativeToChangelogFile="true"/>
     <include file="service_bus/changelog.xml" relativeToChangelogFile="true"/>
-    
+
 </databaseChangeLog>
-```
+````
 
 ### Domain Changelog Example
 
 ```xml
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog">
-    
+
     <changeSet id="001-create-cashiers-table" author="billing-team">
         <sqlFile path="tables/cashiers.sql" relativeToChangelogFile="true"/>
     </changeSet>
-    
+
     <changeSet id="002-create-cashier-currencies-table" author="billing-team">
         <sqlFile path="tables/cashier_currencies.sql" relativeToChangelogFile="true"/>
     </changeSet>
-    
+
     <changeSet id="003-create-cashier-procedure" author="billing-team">
         <sqlFile path="procedures/create_cashier.sql" relativeToChangelogFile="true"/>
     </changeSet>
-    
+
 </databaseChangeLog>
 ```
 
@@ -290,20 +284,24 @@ liquibase history
 ## Performance Considerations
 
 ### Indexing Strategy
-- Primary keys on all tables for fast lookups
-- Foreign key indexes for join performance
-- Composite indexes for common query patterns
-- GIN indexes for JSONB metadata searches
+
+-   Primary keys on all tables for fast lookups
+-   Foreign key indexes for join performance
+-   Composite indexes for common query patterns
+-   GIN indexes for JSONB metadata searches
 
 ### Partitioning
+
 For high-volume tables like invoices, consider partitioning by:
-- Date ranges (monthly/quarterly partitions)
-- Status values (active vs. archived)
-- Currency codes for multi-tenant scenarios
+
+-   Date ranges (monthly/quarterly partitions)
+-   Status values (active vs. archived)
+-   Currency codes for multi-tenant scenarios
 
 ### Connection Pooling
-- Use connection pooling for optimal performance
-- Configure appropriate pool sizes based on load
-- Monitor connection usage and adjust as needed
+
+-   Use connection pooling for optimal performance
+-   Configure appropriate pool sizes based on load
+-   Monitor connection usage and adjust as needed
 
 This database schema provides a solid foundation for the Billing service with proper normalization, indexing, and migration management.
