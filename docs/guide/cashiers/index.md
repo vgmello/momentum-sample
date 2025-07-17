@@ -5,10 +5,11 @@ The Cashiers domain manages the personnel responsible for handling payments and 
 ## Overview
 
 Cashiers are the primary actors in the billing system who:
-- Process invoice payments
-- Manage customer transactions
-- Handle payment reconciliation
-- Generate payment reports
+
+-   Process invoice payments
+-   Manage customer transactions
+-   Handle payment reconciliation
+-   Generate payment reports
 
 The Cashier model represents these real-world billing personnel digitally, tracking their information and payment history.
 
@@ -16,7 +17,7 @@ The Cashier model represents these real-world billing personnel digitally, track
 
 The Cashier entity is defined in [`src/Billing/Cashiers/Contracts/Models/Cashier.cs:5-16`](https://github.com/yourusername/billing/blob/main/src/Billing/Cashiers/Contracts/Models/Cashier.cs#L5-L16):
 
-<<< @/src/Billing/Cashiers/Contracts/Models/Cashier.cs
+<<< @/../src/Billing/Cashiers/Contracts/Models/Cashier.cs
 
 ## API Operations
 
@@ -38,6 +39,7 @@ curl -X POST http://localhost:8101/api/cashiers \
 **Command**: [`src/Billing/Cashiers/Commands/CreateCashier.cs`](https://github.com/yourusername/billing/blob/main/src/Billing/Cashiers/Commands/CreateCashier.cs)
 
 This operation:
+
 1. Validates the cashier data
 2. Generates a unique `CashierId` (ULID)
 3. Persists to the database
@@ -104,27 +106,28 @@ The Cashiers domain publishes integration events for key operations:
 
 Published when a new cashier is added to the system.
 
-<<< @/src/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs
+<<< @/../src/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs
 
 ### CashierUpdated Event
 
 Published when cashier information is modified.
 
-<<< @/src/Billing/Cashiers/Contracts/IntegrationEvents/CashierUpdated.cs
+<<< @/../src/Billing/Cashiers/Contracts/IntegrationEvents/CashierUpdated.cs
 
 ### CashierDeleted Event
 
 Published when a cashier is removed from the system.
 
-<<< @/src/Billing/Cashiers/Contracts/IntegrationEvents/CashierDeleted.cs
+<<< @/../src/Billing/Cashiers/Contracts/IntegrationEvents/CashierDeleted.cs
 
 ## Payment Processing
 
 Cashiers track payment history through the `CashierPayment` relationship:
 
-<<< @/src/Billing/Cashiers/Contracts/Models/CashierPayment.cs
+<<< @/../src/Billing/Cashiers/Contracts/Models/CashierPayment.cs
 
 When an invoice is paid:
+
 1. Payment is recorded against the invoice
 2. CashierPayment entry is created
 3. Payment totals are updated for reporting
@@ -136,11 +139,12 @@ The cashiers data is stored in PostgreSQL:
 **Table**: [`billing.cashiers`](https://github.com/yourusername/billing/blob/main/infra/Billing.Database/Liquibase/billing/tables/cashiers.sql)
 
 **Stored Procedures**:
-- `billing.cashiers_create` - Create new cashier
-- `billing.cashiers_update` - Update cashier details
-- `billing.cashiers_delete` - Remove cashier
-- `billing.cashiers_get` - Retrieve single cashier
-- `billing.cashiers_list` - List all cashiers
+
+-   `billing.cashiers_create` - Create new cashier
+-   `billing.cashiers_update` - Update cashier details
+-   `billing.cashiers_delete` - Remove cashier
+-   `billing.cashiers_get` - Retrieve single cashier
+-   `billing.cashiers_list` - List all cashiers
 
 ## Testing Patterns
 
@@ -151,7 +155,7 @@ The Cashiers domain includes comprehensive test coverage:
 Location: [`tests/Billing.Tests/Unit/Cashiers/`](https://github.com/yourusername/billing/tree/main/tests/Billing.Tests/Unit/Cashiers)
 
 Example test structure:
-<<< @/tests/Billing.Tests/Unit/Cashier/CreateCashierCommandHandlerTests.cs{29-44}
+<<< @/../tests/Billing.Tests/Unit/Cashier/CreateCashierCommandHandlerTests.cs
 
 ### Integration Tests
 
@@ -187,16 +191,19 @@ Integration tests verify the full stack including database operations and event 
 ### Common Issues
 
 **Duplicate Email**: The system prevents duplicate email addresses
-- Solution: Check for existing cashier before creation
+
+-   Solution: Check for existing cashier before creation
 
 **Referenced Cashier Deletion**: Cannot delete cashier with payment history
-- Solution: Implement soft delete or archive functionality
+
+-   Solution: Implement soft delete or archive functionality
 
 **Event Publishing Failures**: Integration events may fail to publish
-- Solution: Implement retry logic and dead letter queues
+
+-   Solution: Implement retry logic and dead letter queues
 
 ## Next Steps
 
-- Learn about [Invoice Processing](/guide/invoices/)
-- Understand [Event-Driven Architecture](/arch/events)
-- Explore [Testing Strategies](/arch/testing)
+-   Learn about [Invoice Processing](/guide/invoices/)
+-   Understand [Event-Driven Architecture](/arch/events)
+-   Explore [Testing Strategies](/arch/testing)

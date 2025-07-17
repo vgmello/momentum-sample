@@ -8,7 +8,7 @@ hero:
     actions:
         - theme: brand
           text: API Definition
-          link: /api/
+          link: "http://localhost:8101/scalar"
         - theme: alt
           text: Billing Events
           link: /events/

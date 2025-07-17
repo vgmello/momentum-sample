@@ -5,17 +5,18 @@ The Invoices domain handles the complete invoice lifecycle from creation through
 ## Overview
 
 Invoices are the core financial documents in the billing system that:
-- Track amounts owed by customers
-- Manage payment terms and due dates
-- Support multiple status workflows
-- Integrate with cashier payment processing
-- Publish events for downstream systems
+
+-   Track amounts owed by customers
+-   Manage payment terms and due dates
+-   Support multiple status workflows
+-   Integrate with cashier payment processing
+-   Publish events for downstream systems
 
 ## Domain Model
 
 The Invoice entity is defined in [`src/Billing/Invoices/Contracts/Models/Invoice.cs:5-26`](https://github.com/yourusername/billing/blob/main/src/Billing/Invoices/Contracts/Models/Invoice.cs#L5-L26):
 
-<<< @/src/Billing/Invoices/Contracts/Models/Invoice.cs
+<<< @/../src/Billing/Invoices/Contracts/Models/Invoice.cs
 
 ## Invoice Status Lifecycle
 
@@ -34,10 +35,10 @@ stateDiagram-v2
 
 ### Status Definitions
 
-- **Draft**: Initial state, invoice can be modified
-- **Finalized**: Locked for payment, no modifications allowed
-- **Paid**: Payment received and processed
-- **Cancelled**: Invoice voided, no payment expected
+-   **Draft**: Initial state, invoice can be modified
+-   **Finalized**: Locked for payment, no modifications allowed
+-   **Paid**: Payment received and processed
+-   **Cancelled**: Invoice voided, no payment expected
 
 ## API Operations
 
@@ -126,7 +127,7 @@ sequenceDiagram
     participant Database
     participant EventBus
     participant BackOffice
-    
+
     Client->>API: POST /invoices/{id}/payment
     API->>CommandBus: SimulatePaymentCommand
     CommandBus->>Database: Record payment
@@ -142,7 +143,7 @@ sequenceDiagram
 
 The [`PaymentReceivedHandler`](https://github.com/yourusername/billing/blob/main/src/Billing.BackOffice/Messaging/Invoices/PaymentReceivedHandler.cs) processes payments asynchronously:
 
-<<< @/src/Billing.BackOffice/Messaging/BillingInboxHandler/PaymentReceivedHandler.cs{11-18}
+<<< @/../src/Billing.BackOffice/Messaging/BillingInboxHandler/PaymentReceivedHandler.cs{11-18}
 
 ## Integration Events
 
@@ -150,25 +151,25 @@ The [`PaymentReceivedHandler`](https://github.com/yourusername/billing/blob/main
 
 Published when a new invoice is created.
 
-<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/InvoiceCreated.cs
+<<< @/../src/Billing/Invoices/Contracts/IntegrationEvents/InvoiceCreated.cs
 
 ### InvoicePaid
 
 Published when an invoice is marked as paid.
 
-<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/InvoicePaid.cs
+<<< @/../src/Billing/Invoices/Contracts/IntegrationEvents/InvoicePaid.cs
 
 ### InvoiceCancelled
 
 Published when an invoice is cancelled.
 
-<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/InvoiceCancelled.cs
+<<< @/../src/Billing/Invoices/Contracts/IntegrationEvents/InvoiceCancelled.cs
 
 ### PaymentReceived
 
 Published to trigger payment processing.
 
-<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/PaymentReceived.cs
+<<< @/../src/Billing/Invoices/Contracts/IntegrationEvents/PaymentReceived.cs
 
 ## Database Schema
 
@@ -177,11 +178,12 @@ Invoice data is stored in PostgreSQL:
 **Table**: [`billing.invoices`](https://github.com/yourusername/billing/blob/main/infra/Billing.Database/Liquibase/billing/tables/invoices.sql)
 
 **Key Stored Procedures**:
-- `billing.invoices_create` - Create new invoice
-- `billing.invoices_cancel` - Cancel invoice
-- `billing.invoices_mark_as_paid` - Update to paid status
-- `billing.invoices_get` - Retrieve single invoice
-- `billing.invoices_list` - List invoices with filters
+
+-   `billing.invoices_create` - Create new invoice
+-   `billing.invoices_cancel` - Cancel invoice
+-   `billing.invoices_mark_as_paid` - Update to paid status
+-   `billing.invoices_get` - Retrieve single invoice
+-   `billing.invoices_list` - List invoices with filters
 
 ## Testing Patterns
 
@@ -191,7 +193,7 @@ Location: [`tests/Billing.Tests/Unit/Invoices/`](https://github.com/yourusername
 
 Example from [`CreateInvoiceCommandHandlerTests.cs:14-59`](https://github.com/yourusername/billing/blob/main/tests/Billing.Tests/Unit/Invoices/CreateInvoiceCommandHandlerTests.cs#L14-L59):
 
-<<< @/tests/Billing.Tests/Unit/Invoices/CreateInvoiceCommandHandlerTests.cs{24-44}
+<<< @/../tests/Billing.Tests/Unit/Invoices/CreateInvoiceCommandHandlerTests.cs{24-44}
 
 ### Integration Tests
 
@@ -225,9 +227,10 @@ flowchart LR
 ### Refund Processing
 
 While not yet implemented, the architecture supports refund workflows through:
-- Negative payment amounts
-- Status transitions (Paid → Refunded)
-- Refund event publishing
+
+-   Negative payment amounts
+-   Status transitions (Paid → Refunded)
+-   Refund event publishing
 
 ## Best Practices
 
@@ -241,30 +244,33 @@ While not yet implemented, the architecture supports refund workflows through:
 
 The system uses the `Result<T>` pattern for explicit error handling:
 
-<<< @/src/Billing/Invoices/Commands/CreateInvoice.cs{29-45}
+<<< @/../src/Billing/Invoices/Commands/CreateInvoice.cs{29-45}
 
 ## Troubleshooting
 
 ### Common Issues
 
 **Payment Not Processing**
-- Check event bus connectivity
-- Verify BackOffice service is running
-- Review event handler logs
+
+-   Check event bus connectivity
+-   Verify BackOffice service is running
+-   Review event handler logs
 
 **Invalid Status Transition**
-- Ensure invoice is in correct status
-- Check business rule validation
-- Review status transition diagram
+
+-   Ensure invoice is in correct status
+-   Check business rule validation
+-   Review status transition diagram
 
 **Duplicate Payments**
-- Implement idempotency keys
-- Check for existing payments
-- Use database constraints
+
+-   Implement idempotency keys
+-   Check for existing payments
+-   Use database constraints
 
 ## Next Steps
 
-- Explore [Cashier Management](/guide/cashiers/)
-- Learn about [Event-Driven Architecture](/arch/events)
-- Review [Database Design](/arch/database)
-- Understand [Testing Strategies](/arch/testing)
+-   Explore [Cashier Management](/guide/cashiers/)
+-   Learn about [Event-Driven Architecture](/arch/events)
+-   Review [Database Design](/arch/database)
+-   Understand [Testing Strategies](/arch/testing)

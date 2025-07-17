@@ -61,7 +61,7 @@ Commands represent write operations (INSERT, UPDATE, DELETE) and typically retur
 
 Execute stored procedures with automatic parameter mapping:
 
-<<< @/src/Billing/Invoices/Commands/CreateInvoice.cs{32-41}
+<<< @/../src/Billing/Invoices/Commands/CreateInvoice.cs{32-41}
 
 **Source Generated Handler:**
 
@@ -114,7 +114,7 @@ public partial record CalculateTaxCommand(
 
 Commands integrate with the Wolverine messaging framework:
 
-<<< @/src/Billing/Invoices/Commands/CreateInvoice.cs{43-78}
+<<< @/../src/Billing/Invoices/Commands/CreateInvoice.cs{43-78}
 
 ## Query Patterns
 
@@ -124,7 +124,7 @@ Queries represent read operations (SELECT) and return data objects or collection
 
 Retrieve a single record with automatic mapping:
 
-<<< @/src/Billing/Invoices/Queries/GetInvoice.cs{14-15}
+<<< @/../src/Billing/Invoices/Queries/GetInvoice.cs{14-15}
 
 **Source Generated Handler:**
 
@@ -149,7 +149,7 @@ public static class GetInvoiceDbQueryHandler
 
 Retrieve collections with pagination support:
 
-<<< @/src/Billing/Invoices/Queries/GetInvoices.cs{13-14}
+<<< @/../src/Billing/Invoices/Queries/GetInvoices.cs{13-14}
 
 **Source Generated Handler:**
 
@@ -174,7 +174,7 @@ public static class GetInvoicesDbQueryHandler
 
 Handle custom parameter names and case conversion:
 
-<<< @/src/Billing/Cashiers/Queries/GetCashier.cs{17-18}
+<<< @/../src/Billing/Cashiers/Queries/GetCashier.cs{17-18}
 
 **Generated `ToDbParams()` method:**
 
@@ -193,7 +193,7 @@ public object ToDbParams()
 
 Automatically convert C# property names to database naming conventions:
 
-<<< @/src/Billing/Cashiers/Queries/GetCashiers.cs{25-26}
+<<< @/../src/Billing/Cashiers/Queries/GetCashiers.cs{25-26}
 
 With `DbParamsCase.SnakeCase`, this generates:
 
@@ -245,7 +245,7 @@ public partial record GetMetricsFromAnalyticsDb(DateTime From, DateTime To) : IQ
 
 Implement proper error handling and validation:
 
-<<< @/src/Billing/Invoices/Commands/CancelInvoice.cs{26-54}
+<<< @/../src/Billing/Invoices/Commands/CancelInvoice.cs{26-54}
 
 ### 4. Transaction Management
 

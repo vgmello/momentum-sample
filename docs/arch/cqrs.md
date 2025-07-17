@@ -10,13 +10,13 @@ This document outlines the Command Query Responsibility Segregation (CQRS) patte
 
 The CQRS implementation follows these core principles:
 
-- **Real-world department metaphor**: Each folder represents a sub-department with its main activities
-- **Minimal ceremony**: Avoiding unnecessary abstractions and complex patterns
-- **Infrastructure as utilities**: Database, messaging, and other infrastructure are treated like office utilities
-- **Digital paper records**: Immutable data structures that can't change themselves
-- **Front office/Back office separation**: Public APIs for front office, async handlers for back office
-- **Developer-friendly**: Simple patterns that are easy to understand and maintain
-- **LLM-friendly**: Familiar real-world patterns that modern AI can easily comprehend
+-   **Real-world department metaphor**: Each folder represents a sub-department with its main activities
+-   **Minimal ceremony**: Avoiding unnecessary abstractions and complex patterns
+-   **Infrastructure as utilities**: Database, messaging, and other infrastructure are treated like office utilities
+-   **Digital paper records**: Immutable data structures that can't change themselves
+-   **Front office/Back office separation**: Public APIs for front office, async handlers for back office
+-   **Developer-friendly**: Simple patterns that are easy to understand and maintain
+-   **LLM-friendly**: Familiar real-world patterns that modern AI can easily comprehend
 
 ## Domain Structure
 
@@ -39,19 +39,19 @@ Commands represent work orders sent to departments. They follow a simple, consis
 
 ### Command Structure
 
-<<< @/src/Billing/Cashiers/Commands/CreateCashier.cs{15-18}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{15-18}
 
 ### Command Validation
 
-<<< @/src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
 
 ### Command Handler
 
-<<< @/src/Billing/Cashiers/Commands/CreateCashier.cs{27-60}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{27-60}
 
 ### Database Command
 
-<<< @/src/Billing/Cashiers/Commands/CreateCashier.cs{62-71}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{62-71}
 
 ## Query Pattern
 
@@ -59,15 +59,15 @@ Queries represent information requests to departments. They focus on data retrie
 
 ### Query Structure
 
-<<< @/src/Billing/Cashiers/Queries/GetCashiers.cs{15-22}
+<<< @/../src/Billing/Cashiers/Queries/GetCashiers.cs{15-22}
 
 ### Query Handler
 
-<<< @/src/Billing/Cashiers/Queries/GetCashiers.cs{24-41}
+<<< @/../src/Billing/Cashiers/Queries/GetCashiers.cs{24-41}
 
 ### Database Query
 
-<<< @/src/Billing/Cashiers/Queries/GetCashiers.cs{43-48}
+<<< @/../src/Billing/Cashiers/Queries/GetCashiers.cs{43-48}
 
 ## Models and Contracts
 
@@ -75,13 +75,13 @@ Queries represent information requests to departments. They focus on data retrie
 
 Models represent the "digital paper records" that departments work with:
 
-<<< @/src/Billing/Cashiers/Contracts/Models/Cashier.cs
+<<< @/../src/Billing/Cashiers/Contracts/Models/Cashier.cs
 
 ### Data Entities
 
 Database entities represent how records are stored:
 
-<<< @/src/Billing/Cashiers/Data/Entities/Cashier.cs
+<<< @/../src/Billing/Cashiers/Data/Entities/Cashier.cs
 
 ## Integration Events
 
@@ -89,7 +89,7 @@ Events are notifications sent between departments when important things happen.
 
 ### Event Structure
 
-<<< @/src/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs
+<<< @/../src/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs
 
 ### Event Publishing
 
@@ -107,11 +107,11 @@ Controllers act as the front office reception desk, handling external requests.
 
 ### Controller Pattern
 
-<<< @/src/Billing.Api/Cashiers/CashiersController.cs{22-41}
+<<< @/../src/Billing.Api/Cashiers/CashiersController.cs{22-41}
 
 ### Result Handling
 
-<<< @/src/Billing.Api/Cashiers/CashiersController.cs{43-61}
+<<< @/../src/Billing.Api/Cashiers/CashiersController.cs{43-61}
 
 ## Database Interaction
 
@@ -155,7 +155,7 @@ return Result.Failure<CashierModel>(new ValidationFailure("Name", "Name is requi
 
 ### Validation Pattern
 
-<<< @/src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
 
 ## Testing Strategy
 
@@ -163,13 +163,13 @@ return Result.Failure<CashierModel>(new ValidationFailure("Name", "Name is requi
 
 Tests focus on business logic without infrastructure concerns:
 
-<<< @/tests/Billing.Tests/Unit/Cashier/CreateCashierCommandHandlerTests.cs{24-44}
+<<< @/../tests/Billing.Tests/Unit/Cashier/CreateCashierCommandHandlerTests.cs{24-44}
 
 ### Integration Testing
 
 Integration tests verify complete request/response cycles:
 
-<<< @/tests/Billing.Tests/Integration/Cashiers/CreateCashierIntegrationTests.cs{21-42}
+<<< @/../tests/Billing.Tests/Integration/Cashiers/CreateCashierIntegrationTests.cs{21-42}
 
 ## Message Bus Integration
 
@@ -198,44 +198,44 @@ Back office operations handle asynchronous processing through event handlers.
 
 ### Event Handler Pattern
 
-<<< @/src/Billing.BackOffice/Messaging/BillingInboxHandler/CashierCreatedHandler.cs
+<<< @/../src/Billing.BackOffice/Messaging/BillingInboxHandler/CashierCreatedHandler.cs
 
 ## Best Practices
 
 ### 1. Command Design
 
-- **Single responsibility**: Each command does one thing
-- **Immutable**: Use record types for command definitions
-- **Validated**: Include validation rules close to the command
-- **Explicit results**: Return Result<T> instead of throwing exceptions
+-   **Single responsibility**: Each command does one thing
+-   **Immutable**: Use record types for command definitions
+-   **Validated**: Include validation rules close to the command
+-   **Explicit results**: Return Result<T> instead of throwing exceptions
 
 ### 2. Query Design
 
-- **Read-only**: Queries should never modify data
-- **Paginated**: Always implement pagination for list queries
-- **Filtered**: Support filtering parameters where appropriate
-- **Cached**: Consider caching for frequently accessed data
+-   **Read-only**: Queries should never modify data
+-   **Paginated**: Always implement pagination for list queries
+-   **Filtered**: Support filtering parameters where appropriate
+-   **Cached**: Consider caching for frequently accessed data
 
 ### 3. Handler Design
 
-- **Static methods**: Use static handlers for better performance
-- **Dependency injection**: Inject dependencies through parameters
-- **Transactional**: Commands should be transactional
-- **Event generation**: Return events for important state changes
+-   **Static methods**: Use static handlers for better performance
+-   **Dependency injection**: Inject dependencies through parameters
+-   **Transactional**: Commands should be transactional
+-   **Event generation**: Return events for important state changes
 
 ### 4. Model Design
 
-- **Immutable**: Use record types or readonly properties
-- **Validated**: Include validation attributes on models
-- **Mapped**: Separate API models from database entities
-- **Documented**: Include XML documentation for public APIs
+-   **Immutable**: Use record types or readonly properties
+-   **Validated**: Include validation attributes on models
+-   **Mapped**: Separate API models from database entities
+-   **Documented**: Include XML documentation for public APIs
 
 ### 5. Database Design
 
-- **Stored procedures**: Use stored procedures for complex operations
-- **Functions**: Use functions for read operations
-- **Parameters**: Use parameterized queries to prevent SQL injection
-- **Indexes**: Add appropriate indexes for query performance
+-   **Stored procedures**: Use stored procedures for complex operations
+-   **Functions**: Use functions for read operations
+-   **Parameters**: Use parameterized queries to prevent SQL injection
+-   **Indexes**: Add appropriate indexes for query performance
 
 ## Anti-Patterns to Avoid
 
@@ -246,7 +246,7 @@ Back office operations handle asynchronous processing through event handlers.
 public abstract class BaseCommandHandler<TCommand, TResult> { }
 
 // Mutable commands
-public class CreateCashierCommand 
+public class CreateCashierCommand
 {
     public string Name { get; set; }  // Mutable!
 }
@@ -287,52 +287,59 @@ public static async Task<Result<CashierModel>> Handle(...)
 When implementing a new domain, follow this checklist:
 
 ### Commands
-- [ ] Create command record with validation
-- [ ] Implement static handler method
-- [ ] Add database command with `[DbCommand]` attribute
-- [ ] Return Result<T> and integration event
-- [ ] Add unit tests for handler logic
+
+-   [ ] Create command record with validation
+-   [ ] Implement static handler method
+-   [ ] Add database command with `[DbCommand]` attribute
+-   [ ] Return Result<T> and integration event
+-   [ ] Add unit tests for handler logic
 
 ### Queries
-- [ ] Create query record with parameters
-- [ ] Implement static handler method
-- [ ] Add database query with `[DbCommand]` attribute
-- [ ] Return appropriate data types
-- [ ] Add unit tests for query logic
+
+-   [ ] Create query record with parameters
+-   [ ] Implement static handler method
+-   [ ] Add database query with `[DbCommand]` attribute
+-   [ ] Return appropriate data types
+-   [ ] Add unit tests for query logic
 
 ### Contracts
-- [ ] Define domain models in Contracts/Models
-- [ ] Create integration events in Contracts/IntegrationEvents
-- [ ] Add XML documentation for public APIs
-- [ ] Version contracts appropriately
+
+-   [ ] Define domain models in Contracts/Models
+-   [ ] Create integration events in Contracts/IntegrationEvents
+-   [ ] Add XML documentation for public APIs
+-   [ ] Version contracts appropriately
 
 ### API
-- [ ] Create controller with thin wrappers
-- [ ] Use message bus for all operations
-- [ ] Implement proper HTTP status codes
-- [ ] Add API documentation
+
+-   [ ] Create controller with thin wrappers
+-   [ ] Use message bus for all operations
+-   [ ] Implement proper HTTP status codes
+-   [ ] Add API documentation
 
 ### Database
-- [ ] Create stored procedures for commands
-- [ ] Create functions for queries
-- [ ] Add appropriate indexes
-- [ ] Include database migration scripts
+
+-   [ ] Create stored procedures for commands
+-   [ ] Create functions for queries
+-   [ ] Add appropriate indexes
+-   [ ] Include database migration scripts
 
 ### Testing
-- [ ] Unit tests for all handlers
-- [ ] Integration tests for API endpoints
-- [ ] Test both success and failure scenarios
-- [ ] Include performance tests for critical paths
+
+-   [ ] Unit tests for all handlers
+-   [ ] Integration tests for API endpoints
+-   [ ] Test both success and failure scenarios
+-   [ ] Include performance tests for critical paths
 
 ## Conclusion
 
 This CQRS implementation prioritizes simplicity, maintainability, and developer productivity. By following real-world department metaphors and avoiding unnecessary abstractions, the codebase remains approachable for developers of all skill levels while maintaining the benefits of CQRS architecture.
 
 The pattern ensures:
-- Clear separation between reads and writes
-- Scalable message-based communication
-- Robust error handling
-- Comprehensive testing support
-- Easy integration with external systems
+
+-   Clear separation between reads and writes
+-   Scalable message-based communication
+-   Robust error handling
+-   Comprehensive testing support
+-   Easy integration with external systems
 
 Use this guide as a reference when implementing new domains or extending existing functionality in the billing system.

@@ -21,7 +21,7 @@ export default defineConfig({
     themeConfig: {
         nav: [
             { text: "Home", link: "/" },
-            { text: "API", link: "/api/" },
+            { text: "API", link: "http://localhost:8101/scalar" },
             { text: "Events", link: "/events/" },
             { text: "Guide", link: "/guide/" },
             { text: "Architecture", link: "/arch/" },

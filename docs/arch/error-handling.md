@@ -10,11 +10,11 @@ This document outlines the error handling approach used in the billing applicati
 
 The error handling strategy reflects how real-world departments handle problems:
 
-- **Business errors**: Like "customer not found" or "invalid payment amount" - these are expected outcomes that departments handle routinely
-- **System errors**: Like database connectivity issues or network failures - these are unexpected problems that stop work
-- **Validation errors**: Like missing required fields - these are caught at the reception desk before work begins
-- **Explicit over implicit**: All possible business outcomes are explicit in method signatures
-- **Structured communication**: Error information is consistent and actionable
+-   **Business errors**: Like "customer not found" or "invalid payment amount" - these are expected outcomes that departments handle routinely
+-   **System errors**: Like database connectivity issues or network failures - these are unexpected problems that stop work
+-   **Validation errors**: Like missing required fields - these are caught at the reception desk before work begins
+-   **Explicit over implicit**: All possible business outcomes are explicit in method signatures
+-   **Structured communication**: Error information is consistent and actionable
 
 ## The Result Pattern
 
@@ -22,19 +22,19 @@ The system uses a `Result<T>` type that represents either success or failure exp
 
 ### Result Type Implementation
 
-<<< @/libs/Operations/src/Operations.Extensions/Result.cs
+<<< @/../libs/Operations/src/Operations.Extensions/Result.cs
 
 ### Why Result Over Exceptions
 
-| Aspect | Result Pattern | Exception Pattern |
-|--------|---------------|-------------------|
-| **Performance** | Fast - no stack unwinding | Slow - expensive to throw |
-| **Explicit** | Errors are part of method signature | Errors are hidden from callers |
-| **Handling** | Must be handled explicitly | Can be ignored accidentally |
-| **Flow Control** | Normal program flow | Exceptional program flow |
-| **API Integration** | Maps cleanly to HTTP status codes | Requires conversion layer |
-| **Testing** | Easy to test all paths | Hard to test error scenarios |
-| **Functional Style** | Supports functional composition | Imperative error handling |
+| Aspect               | Result Pattern                      | Exception Pattern              |
+| -------------------- | ----------------------------------- | ------------------------------ |
+| **Performance**      | Fast - no stack unwinding           | Slow - expensive to throw      |
+| **Explicit**         | Errors are part of method signature | Errors are hidden from callers |
+| **Handling**         | Must be handled explicitly          | Can be ignored accidentally    |
+| **Flow Control**     | Normal program flow                 | Exceptional program flow       |
+| **API Integration**  | Maps cleanly to HTTP status codes   | Requires conversion layer      |
+| **Testing**          | Easy to test all paths              | Hard to test error scenarios   |
+| **Functional Style** | Supports functional composition     | Imperative error handling      |
 
 ## Business Error Handling
 
@@ -44,17 +44,17 @@ Business errors represent expected outcomes that departments handle as part of t
 
 Commands return `Result<T>` to indicate success or validation failures:
 
-<<< @/src/Billing/Cashiers/Commands/UpdateCashier.cs{35-48}
+<<< @/../src/Billing/Cashiers/Commands/UpdateCashier.cs{35-48}
 
 ### Query Error Handling
 
 Queries use Result pattern for business-level failures:
 
-<<< @/src/Billing/Invoices/Queries/GetInvoice.cs{24-34}
+<<< @/../src/Billing/Invoices/Queries/GetInvoice.cs{24-34}
 
 ### Creating Validation Failures
 
-<<< @/src/Billing/Invoices/Commands/CancelInvoice.cs{29-35}
+<<< @/../src/Billing/Invoices/Commands/CancelInvoice.cs{29-35}
 
 ## Validation Integration
 
@@ -62,23 +62,23 @@ The system integrates FluentValidation with the Result pattern for comprehensive
 
 ### Command Validation
 
-<<< @/src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
 
 ### Validation Middleware
 
 The system automatically applies validation through middleware:
 
-<<< @/libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/FluentValidationExecutor.cs{19-39}
+<<< @/../libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/FluentValidationExecutor.cs{19-39}
 
 ### Validation Policy
 
-<<< @/libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/FluentValidationPolicy.cs{12-28}
+<<< @/../libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/FluentValidationPolicy.cs{12-28}
 
 ## API Error Handling
 
 Controllers use the `Match` method to convert Result types to HTTP responses:
 
-<<< @/src/Billing.Api/Cashiers/CashiersController.cs{43-61}
+<<< @/../src/Billing.Api/Cashiers/CashiersController.cs{43-61}
 
 ### HTTP Status Code Mapping
 
@@ -87,7 +87,7 @@ Controllers use the `Match` method to convert Result types to HTTP responses:
 return result.Match(
     success => StatusCode(StatusCodes.Status201Created, success),  // 201 Created
     success => Ok(success),                                        // 200 OK
-    
+
     // Error cases
     errors => BadRequest(new { Errors = errors })                  // 400 Bad Request
 );
@@ -97,14 +97,14 @@ return result.Match(
 
 ```json
 {
-  "errors": [
-    {
-      "propertyName": "Email",
-      "errorMessage": "Email address is required",
-      "attemptedValue": "",
-      "errorCode": "NotEmptyValidator"
-    }
-  ]
+    "errors": [
+        {
+            "propertyName": "Email",
+            "errorMessage": "Email address is required",
+            "attemptedValue": "",
+            "errorCode": "NotEmptyValidator"
+        }
+    ]
 }
 ```
 
@@ -112,7 +112,7 @@ return result.Match(
 
 gRPC services convert Result patterns to RPC exceptions:
 
-<<< @/src/Billing.Api/Cashiers/CashierService.cs{27-35}
+<<< @/../src/Billing.Api/Cashiers/CashierService.cs{27-35}
 
 ### gRPC Error Mapping
 
@@ -137,9 +137,9 @@ var rowsAffected = await messaging.InvokeCommandAsync(updateDbCommand, cancellat
 
 if (rowsAffected == 0)
 {
-    var failures = new List<ValidationFailure> 
-    { 
-        new("CashierId", "Cashier not found or cannot be updated") 
+    var failures = new List<ValidationFailure>
+    {
+        new("CashierId", "Cashier not found or cannot be updated")
     };
     return (failures, null);
 }
@@ -168,17 +168,17 @@ System errors represent unexpected problems that stop normal operation.
 
 ### Exception Handling Middleware
 
-<<< @/libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/ExceptionHandlingFrame.cs{17-33}
+<<< @/../libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/ExceptionHandlingFrame.cs{17-33}
 
 ### Exception Handling Policy
 
-<<< @/libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/ExceptionHandlingPolicy.cs{13-25}
+<<< @/../libs/Operations/src/Operations.ServiceDefaults/Messaging/Middlewares/ExceptionHandlingPolicy.cs{13-25}
 
 ## Testing Error Scenarios
 
 ### Testing Result Pattern
 
-<<< @/tests/Billing.Tests/Unit/Cashier/UpdateCashierCommandHandlerTests.cs{47-62}
+<<< @/../tests/Billing.Tests/Unit/Cashier/UpdateCashierCommandHandlerTests.cs{47-62}
 
 ### Testing Exception Scenarios
 
@@ -201,27 +201,31 @@ public async Task Handle_DatabaseConnectionFails_ThrowsException()
 ## Error Categories
 
 ### 1. Validation Errors (400 Bad Request)
-- Missing required fields
-- Invalid data formats
-- Business rule violations
-- **Handling**: Result pattern with ValidationFailure
+
+-   Missing required fields
+-   Invalid data formats
+-   Business rule violations
+-   **Handling**: Result pattern with ValidationFailure
 
 ### 2. Business Logic Errors (400 Bad Request)
-- Resource not found
-- Invalid state transitions
-- Duplicate entries
-- **Handling**: Result pattern with ValidationFailure
+
+-   Resource not found
+-   Invalid state transitions
+-   Duplicate entries
+-   **Handling**: Result pattern with ValidationFailure
 
 ### 3. Authorization Errors (401/403)
-- Invalid authentication
-- Insufficient permissions
-- **Handling**: Exceptions (handled by framework)
+
+-   Invalid authentication
+-   Insufficient permissions
+-   **Handling**: Exceptions (handled by framework)
 
 ### 4. System Errors (500 Internal Server Error)
-- Database connection failures
-- Network timeouts
-- Out of memory conditions
-- **Handling**: Exceptions
+
+-   Database connection failures
+-   Network timeouts
+-   Out of memory conditions
+-   **Handling**: Exceptions
 
 ## Best Practices
 
@@ -235,7 +239,7 @@ public static async Task<Result<Cashier>> Handle(CreateCashierCommand command, .
     {
         return Result.Failure<Cashier>(new ValidationFailure("Email", "Email already exists"));
     }
-    
+
     // Success case
     return Result.Success(cashier);
 }
@@ -315,10 +319,10 @@ public static async Task<Result<Cashier>> Handle(CreateCashierCommand command, .
 public static async Task<Result<ComplexOperation>> Handle(ComplexCommand command, ...)
 {
     await messaging.InvokeCommandAsync(new CreateCashierCommand(...), cancellationToken);
-    
+
     // If this fails, the cashier creation above is rolled back
     var result = await messaging.InvokeCommandAsync(new CreateInvoiceCommand(...), cancellationToken);
-    
+
     return result.Match(
         success => Result.Success(new ComplexOperation()),
         errors => Result.Failure<ComplexOperation>(errors)
@@ -331,19 +335,22 @@ public static async Task<Result<ComplexOperation>> Handle(ComplexCommand command
 For teams transitioning from exception-based to Result-based error handling:
 
 ### Phase 1: New Code
-- All new commands and queries use Result pattern
-- New API endpoints handle Result types
-- New tests verify both success and failure cases
+
+-   All new commands and queries use Result pattern
+-   New API endpoints handle Result types
+-   New tests verify both success and failure cases
 
 ### Phase 2: High-Traffic Paths
-- Convert frequently used endpoints to Result pattern
-- Update error handling middleware
-- Add comprehensive logging
+
+-   Convert frequently used endpoints to Result pattern
+-   Update error handling middleware
+-   Add comprehensive logging
 
 ### Phase 3: Complete Migration
-- Convert remaining exception-based code
-- Update all tests to use Result pattern
-- Remove exception-based error handling
+
+-   Convert remaining exception-based code
+-   Update all tests to use Result pattern
+-   Remove exception-based error handling
 
 ## Troubleshooting Common Issues
 
@@ -383,11 +390,11 @@ catch (Exception ex)
 // Solution: Preserve error details
 return result.Match(
     success => Ok(success),
-    errors => BadRequest(new { 
-        Errors = errors.Select(e => new { 
-            Field = e.PropertyName, 
-            Message = e.ErrorMessage 
-        }) 
+    errors => BadRequest(new {
+        Errors = errors.Select(e => new {
+            Field = e.PropertyName,
+            Message = e.ErrorMessage
+        })
     })
 );
 ```
@@ -396,12 +403,12 @@ return result.Match(
 
 The error handling strategy in this billing application provides:
 
-- **Explicit error handling** through the Result pattern
-- **Structured error information** with ValidationFailure
-- **Performance benefits** by avoiding exceptions for business logic
-- **API-friendly** error responses
-- **Comprehensive testing** support
-- **Framework integration** with Wolverine messaging
+-   **Explicit error handling** through the Result pattern
+-   **Structured error information** with ValidationFailure
+-   **Performance benefits** by avoiding exceptions for business logic
+-   **API-friendly** error responses
+-   **Comprehensive testing** support
+-   **Framework integration** with Wolverine messaging
 
 This approach mirrors real-world department operations where different types of problems are handled appropriately - routine business issues are processed normally, while system failures require escalation and intervention.
 
