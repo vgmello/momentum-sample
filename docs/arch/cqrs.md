@@ -39,19 +39,19 @@ Commands represent work orders sent to departments. They follow a simple, consis
 
 ### Command Structure
 
-<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{15-18}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{10-10}
 
 ### Command Validation
 
-<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{12-20}
 
 ### Command Handler
 
-<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{27-60}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{22-53}
 
 ### Database Command
 
-<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{62-71}
+<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{24-25}
 
 ## Query Pattern
 
