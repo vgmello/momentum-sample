@@ -1,8 +1,8 @@
 # InvoiceGenerated
 
-**Status:** Active  
-**Version:** v1  
-**Topic:** N/A (Domain Event)  
+**Status:** Active
+**Version:** v1
+**Topic:** 
 **Type:** Domain Event
 
 ## Description

@@ -13,9 +13,7 @@ Published when a new cashier is successfully created in the billing system. This
 
 This event is published when:
 
--   A new cashier is created via the `CreateCashierCommand`
 -   The cashier creation process completes successfully
--   All cashier validation and business rules have been satisfied
 
 ## Event Payload
 
