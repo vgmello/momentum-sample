@@ -1,59 +1,58 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "Billing Service",
-  description: "Comprehensive billing service documentation with API reference, architecture, and development guides",
-  base: '/',
-  srcDir: '.',
-  outDir: '.vitepress/dist',
-  
-  themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Architecture', link: '/architecture' },
-      { text: 'API Reference', link: '/api-reference' },
-      { text: 'Database', link: '/database' },
-      { text: 'Frontend', link: '/frontend' }
-    ],
+    title: "Billing Solution",
+    description: "An App Template",
+    themeConfig: {
+        // https://vitepress.dev/reference/default-theme-config
+        nav: [
+            { text: "Home", link: "/" },
+            { text: "API", link: "/api/" },
+            { text: "Events", link: "/events/" },
+            { text: "Architecture", link: "/arch/" },
+            { text: "Guide", link: "/guide/" },
+            { text: "Reference", link: "/reference/" },
+        ],
 
-    sidebar: [
-      {
-        text: 'Documentation',
-        items: [
-          { text: 'Overview', link: '/' },
-          { text: 'Architecture Overview', link: '/architecture' },
-          { text: 'API Reference', link: '/api-reference' },
-          { text: 'Database Schema', link: '/database' },
-          { text: 'Frontend Development', link: '/frontend' }
-        ]
-      }
-    ],
+        sidebar: {
+            "/arch/": {
+                base: "/arch/",
+                items: [
+                    {
+                        text: "Architecture",
+                        collapsed: false,
+                        items: [
+                            { text: "Overview", link: "/" },
+                            { text: "ADRs", link: "/" },
+                            { text: "Infrastructure", link: "/" },
+                        ],
+                    },
+                    {
+                        text: "Data",
+                        collapsed: false,
+                        items: [{ text: "Databases", link: "/" }],
+                    },
+                ],
+            },
+            "/guide/": {
+                base: "/guide/",
+                items: [
+                    {
+                        text: "Introduction",
+                        collapsed: false,
+                        items: [
+                            { text: "Billing Solution", link: "/" },
+                            { text: "Getting Started", link: "getting-started" },
+                        ],
+                    },
+                ],
+            },
+            "/reference": [],
+        },
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/your-org/billing-service' }
-    ],
-
-    search: {
-      provider: 'local'
+        socialLinks: [{ icon: "github", link: "https://github.com/vuejs/vitepress" }],
     },
-
-    footer: {
-      message: 'Billing Service Documentation',
-      copyright: 'Copyright © 2025 Billing Service'
-    }
-  },
-
-  markdown: {
-    lineNumbers: true,
-    anchor: {
-      permalink: true
-    }
-  },
-
-  ignoreDeadLinks: [
-    // Allow localhost URLs for development
-    /^http:\/\/localhost:\d+/
-  ]
-})
+    lastUpdated: true,
+    cleanUrls: true,
+});

@@ -1,9 +1,10 @@
-# Billing Service
+# Billing Solution
 
-The Billing Service manages cashiers, invoices, and payment processing within the broader Operations platform. It provides both REST and gRPC APIs for managing billing operations and integrates with other services through event-driven messaging.
+The Billing Service manages cashiers, invoices, and payment processing within the broader platform. It provides both REST and gRPC APIs for managing billing operations and integrates with other services through event-driven messaging.
 
 ## TL;DR
-This codebase is designed as an app template that mirrors real-world billing department operations*, making it intuitive for junior engineers and non-technical product people to understand - each folder under Billing represents a sub-department with its main activities and processes, categorized as commands or queries. The design focuses on minimal ceremony code, avoiding almost all common tech abstractions, treats infrastructure like office utilities, uses digital representations of what would be "paper" records that can't change themselves but can be modified by external actors, Front office/desk operations are exposed as public sync APIs, and back office operations are supported by async event handlers.
+
+This codebase is designed as an app template that mirrors real-world billing department operations\*, making it intuitive for junior engineers and non-technical product people to understand - each folder under Billing represents a sub-department with its main activities and processes, categorized as commands or queries. The design focuses on minimal ceremony code, avoiding almost all common tech abstractions, treats infrastructure like office utilities, uses digital representations of what would be "paper" records that can't change themselves but can be modified by external actors, Front office/desk operations are exposed as public sync APIs, and back office operations are supported by async event handlers.
 The aim was for it to be extremely simple to use and very developer-friendly, however, as a positive, unexpected side effect, the simplicity and real-world mirroring approach also make the codebase naturally LLM-friendly, modern models can easily understand code that follows familiar real-world patterns.
 
 ## Code Structure and Design Philosophy
@@ -164,18 +165,21 @@ The solution leverages a comprehensive Platform Operations framework located in 
 #### **Core Libraries**
 
 -   **Operations.ServiceDefaults** - Core infrastructure patterns including:
+
     -   Standardized service setup with minimal configuration
     -   Built-in logging (Serilog), observability (OpenTelemetry), and health checks
     -   Wolverine-based message handling with CloudEvents support
     -   Convention-over-configuration approach for microservices
 
 -   **Operations.ServiceDefaults.Api** - API-specific extensions including:
+
     -   OpenAPI/Swagger documentation with XML comment support
     -   gRPC service integration with Protocol Buffers
     -   Automatic route transformation (kebab-case)
     -   Endpoint filters and middleware
 
 -   **Operations.Extensions** - Extension methods and utility implementations for:
+
     -   Database connection management and pooling
     -   Serialization and deserialization patterns
     -   Performance optimizations and zero-allocation patterns
@@ -196,18 +200,21 @@ The solution leverages a comprehensive Platform Operations framework located in 
 ### Framework Features
 
 #### **Service Infrastructure**
+
 -   **Standardized Setup**: Services can be configured with minimal boilerplate using `builder.AddServiceDefaults()`
 -   **Observability**: Built-in OpenTelemetry integration for distributed tracing and metrics
 -   **Health Checks**: Automatic health check endpoints for Kubernetes readiness/liveness probes
 -   **Security**: Built-in HTTPS enforcement, JWT validation, and rate limiting
 
 #### **Database Operations**
+
 -   **Performance**: Zero-allocation patterns through source generation
 -   **Type Safety**: Compile-time validation for database operations
 -   **Multi-Database**: Support for multiple database connections with keyed services
 -   **Migrations**: Integration with Liquibase for schema management
 
 #### **Messaging & Events**
+
 -   **CloudEvents**: StandardizedEvent format for cross-service communication
 -   **Kafka Integration**: Built-in Kafka support for event streaming
 -   **CQRS Patterns**: Command/Query separation with Wolverine message handling
@@ -361,6 +368,7 @@ dotnet run --project Billing/src/Billing.BackOffice.Orleans
 -   **gRPC**: Connect to localhost:8102
 
 ### Option 3: Docker Compose
+
 ### Option 3: Docker Compose
 
 For containerized deployment:
@@ -398,7 +406,6 @@ Use the Protocol Buffer definitions in `src/Billing.Api/Cashier/Protos/` for typ
 grpcurl -plaintext localhost:8102 list
 grpcurl -plaintext -d '{"pageNumber": 1, "pageSize": 10}' localhost:8102 cashiers.CashiersService/GetCashiers
 ```
-
 
 ## Database Schema
 
@@ -449,9 +456,9 @@ dotnet test libs/Operations/tests/
 
 #### Platform Library Tests
 
-- **Unit Tests**: Testing core extension methods and utilities
-- **Source Generator Tests**: Validation of compile-time code generation
-- **Integration Tests**: Testing platform components with real dependencies
+-   **Unit Tests**: Testing core extension methods and utilities
+-   **Source Generator Tests**: Validation of compile-time code generation
+-   **Integration Tests**: Testing platform components with real dependencies
 
 ### Test Infrastructure
 
@@ -552,7 +559,6 @@ The Billing service communicates with other services through integration events:
 ### Consumed Events
 
 -   **BusinessDayEndedEvent**: Reacts to accounting business day operations
-
 
 ## Orleans Integration
 
