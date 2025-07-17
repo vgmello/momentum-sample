@@ -16,13 +16,13 @@ The fastest way to get started is using .NET Aspire orchestration:
 Make you have the aspire workload installed, you can install using the following command.
 
 ```bash
-dotnet workload install aspire
+dotnet workload install aspire // [!code highlight]
 ```
 
 ```bash
 # Run the entire Billing service stack
-cd Billing/src/Billing.AppHost
-dotnet run
+cd Billing/src/Billing.AppHost // [!code highlight]
+dotnet run // [!code highlight]
 ```
 
 This automatically:
@@ -53,13 +53,13 @@ Run these commands from the `Billing/infra/Billing.Database/` directory:
 cd Billing/infra/Billing.Database/
 
 # Step 1: Setup databases (creates actual dbs)
-liquibase update --defaults-file liquibase.setup.properties
+liquibase update --defaults-file liquibase.setup.properties // [!code highlight]
 
 # Step 2: Service bus schema
-liquibase update --defaults-file liquibase.servicebus.properties
+liquibase update --defaults-file liquibase.servicebus.properties // [!code highlight]
 
 # Step 3: Application schema
-liquibase update
+liquibase update // [!code highlight]
 ```
 
 ### 2. Run Individual Services
@@ -90,11 +90,11 @@ Once the system is running, let's create some billing data:
 First, let's create a cashier who will handle invoice payments:
 
 ```bash
-curl -X POST http://localhost:8101/api/cashiers \
+curl -X POST http://localhost:8101/api/cashiers \ // [!code highlight]
   -H "Content-Type: application/json" \
   -d '{
-    "name": "John Smith",
-    "email": "john.smith@billing.com"
+    "name": "John Smith", // [!code highlight]
+    "email": "john.smith@billing.com" // [!code highlight]
   }'
 ```
 

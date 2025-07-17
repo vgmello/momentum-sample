@@ -23,11 +23,11 @@ The `DbCommand` attribute is a powerful tool that:
 
 ```csharp
 [DbCommand(
-    sp: "stored_procedure_name",        // Stored procedure (mutually exclusive)
-    sql: "SELECT * FROM table",         // Raw SQL query (mutually exclusive)
-    fn: "SELECT * FROM function",       // Function call (mutually exclusive)
-    paramsCase: DbParamsCase.SnakeCase, // Parameter naming convention
-    nonQuery: true,                     // Whether it's a non-query operation
+    sp: "stored_procedure_name",        // Stored procedure (mutually exclusive) // [!code highlight]
+    sql: "SELECT * FROM table",         // Raw SQL query (mutually exclusive) // [!code highlight]
+    fn: "SELECT * FROM function",       // Function call (mutually exclusive) // [!code highlight]
+    paramsCase: DbParamsCase.SnakeCase, // Parameter naming convention // [!code highlight]
+    nonQuery: true,                     // Whether it's a non-query operation // [!code highlight]
     dataSource: "connectionKey"         // Data source key for multi-DB scenarios
 )]
 ```
@@ -45,9 +45,9 @@ The `DbParamsCase` enum controls how C# property names are converted to database
 Override individual parameter names using the `[Column]` attribute:
 
 ```csharp
-[DbCommand]
+[DbCommand] // [!code highlight]
 public partial record MyCommand(
-    [Column("custom_id")] Guid Id,
+    [Column("custom_id")] Guid Id, // [!code highlight]
     string Name
 );
 ```
@@ -62,16 +62,16 @@ Execute stored procedures with automatic parameter mapping:
 
 ```csharp
 // From: src/Billing/Invoices/Commands/CreateInvoice.cs:32-41
-[DbCommand(sp: "billing.invoices_create", nonQuery: true)]
+[DbCommand(sp: "billing.invoices_create", nonQuery: true)] // [!code highlight]
 public partial record InsertInvoiceCommand(
     Guid InvoiceId,
     string Name,
     string Status,
-    decimal Amount,
+    decimal Amount, // [!code highlight]
     string? Currency,
     DateTime? DueDate,
     Guid? CashierId
-) : ICommand<int>;
+) : ICommand<int>; // [!code highlight]
 ```
 
 **Generated Handler:**
@@ -84,10 +84,10 @@ public static class InsertInvoiceCommandHandler
         CancellationToken cancellationToken = default)
     {
         await using var connection = await datasource.OpenConnectionAsync(cancellationToken);
-        var dbParams = command.ToDbParams();
+        var dbParams = command.ToDbParams(); // [!code highlight]
         return await SqlMapper.ExecuteAsync(connection, 
             new CommandDefinition("billing.invoices_create", dbParams, 
-                commandType: CommandType.StoredProcedure, 
+                commandType: CommandType.StoredProcedure, // [!code highlight]
                 cancellationToken: cancellationToken));
     }
 }

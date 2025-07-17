@@ -22,12 +22,12 @@ Primary table for cashier management.
 
 ```sql
 CREATE TABLE billing.cashiers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), // [!code highlight]
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE, // [!code highlight]
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    version INTEGER NOT NULL DEFAULT 1
+    version INTEGER NOT NULL DEFAULT 1 // [!code highlight]
 );
 ```
 
@@ -51,8 +51,8 @@ Manages multi-currency support for cashiers.
 ```sql
 CREATE TABLE billing.cashier_currencies (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    cashier_id UUID NOT NULL REFERENCES billing.cashiers(id),
-    currency_code CHAR(3) NOT NULL,
+    cashier_id UUID NOT NULL REFERENCES billing.cashiers(id), // [!code highlight]
+    currency_code CHAR(3) NOT NULL, // [!code highlight]
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -78,10 +78,10 @@ Stores invoice information and status.
 CREATE TABLE billing.invoices (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     cashier_id UUID REFERENCES billing.cashiers(id),
-    amount DECIMAL(19,4) NOT NULL,
+    amount DECIMAL(19,4) NOT NULL, // [!code highlight]
     currency_code CHAR(3) NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'Pending',
-    metadata JSONB,
+    status VARCHAR(50) NOT NULL DEFAULT 'Pending', // [!code highlight]
+    metadata JSONB, // [!code highlight]
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     version INTEGER NOT NULL DEFAULT 1
@@ -114,8 +114,8 @@ Atomically creates a cashier with validation and audit logging.
 
 ```sql
 CREATE OR REPLACE FUNCTION billing.create_cashier(
-    p_name VARCHAR(255),
-    p_email VARCHAR(255)
+    p_name VARCHAR(255), // [!code highlight]
+    p_email VARCHAR(255) // [!code highlight]
 )
 RETURNS TABLE(
     id UUID,
@@ -130,17 +130,17 @@ AS $$
 BEGIN
     -- Validation logic
     IF p_name IS NULL OR LENGTH(TRIM(p_name)) = 0 THEN
-        RAISE EXCEPTION 'Name cannot be empty';
+        RAISE EXCEPTION 'Name cannot be empty'; // [!code highlight]
     END IF;
 
     IF p_email IS NULL OR LENGTH(TRIM(p_email)) = 0 THEN
-        RAISE EXCEPTION 'Email cannot be empty';
+        RAISE EXCEPTION 'Email cannot be empty'; // [!code highlight]
     END IF;
 
     -- Insert and return the new cashier
     RETURN QUERY
     INSERT INTO billing.cashiers (name, email)
-    VALUES (TRIM(p_name), LOWER(TRIM(p_email)))
+    VALUES (TRIM(p_name), LOWER(TRIM(p_email))) // [!code highlight]
     RETURNING 
         billing.cashiers.id,
         billing.cashiers.name,
@@ -204,10 +204,10 @@ CREATE TABLE service_bus.inbox (
 The service uses source generators for type-safe database operations:
 
 ```csharp
-[DbCommand("SELECT * FROM billing.cashiers WHERE id = @id")]
+[DbCommand("SELECT * FROM billing.cashiers WHERE id = @id")] // [!code highlight]
 public partial class GetCashierQuery
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } // [!code highlight]
 }
 ```
 
@@ -223,15 +223,15 @@ For complex queries and relationships:
 ```csharp
 public class BillingDbContext : DbContext
 {
-    public DbSet<Cashier> Cashiers { get; set; }
-    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<Cashier> Cashiers { get; set; } // [!code highlight]
+    public DbSet<Invoice> Invoices { get; set; } // [!code highlight]
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Cashier>()
             .HasMany(c => c.Invoices)
             .WithOne(i => i.Cashier)
-            .HasForeignKey(i => i.CashierId);
+            .HasForeignKey(i => i.CashierId); // [!code highlight]
     }
 }
 ```

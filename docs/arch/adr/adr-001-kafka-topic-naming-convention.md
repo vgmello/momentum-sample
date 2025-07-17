@@ -26,27 +26,27 @@ A clear, enforceable standard is required to address these issues and provide a 
 
 We will adopt a mandatory, five-part, dot-separated naming convention for all Kafka topics. This structure is designed to be self-documenting, machine-parsable, and aligned with security best practices.
 
-**The chosen structure is:** `<env>.<domain>.<scope>.<object|event_description>.<version>`
+**The chosen structure is:** `<env>.<domain>.<scope>.<object|event_description>.<version>` // [!code highlight]
 
 ### Component Definitions:
 
-1. **`<env>`:** The deployment environment (e.g., `prod`, `staging`, `dev`).
+1. **`<env>`:** The deployment environment (e.g., `prod`, `staging`, `dev`). // [!code highlight]
 
-2. **`<domain>`:** The business domain or bounded context owning the data (e.g., `billing`, `identity`).
+2. **`<domain>`:** The business domain or bounded context owning the data (e.g., `billing`, `identity`). // [!code highlight]
 
-3. **`<scope>`:** The visibility and ACL boundary.
+3. **`<scope>`:** The visibility and ACL boundary. // [!code highlight]
 
-    - `public`: For data products intended for cross-domain consumption.
+    - `public`: For data products intended for cross-domain consumption. // [!code highlight]
 
-    - `internal`: For data used exclusively within the domain's boundary.
+    - `internal`: For data used exclusively within the domain's boundary. // [!code highlight]
 
-4. **`<object|event_description>`:** The core content identifier.
+4. **`<object|event_description>`:** The core content identifier. // [!code highlight]
 
-    - **Entity Topic (Guaranteed Order):** A **plural noun** (e.g., `invoices`, `users`) for topics containing multiple event types for a single entity, partitioned by the entity ID.
+    - **Entity Topic (Guaranteed Order):** A **plural noun** (e.g., `invoices`, `users`) for topics containing multiple event types for a single entity, partitioned by the entity ID. // [!code highlight]
 
-    - **Independent Event Topic (No Guaranteed Order):** A **past-tense verb phrase** (e.g., `login_failures`) for topics containing a single, discrete event type.
+    - **Independent Event Topic (No Guaranteed Order):** A **past-tense verb phrase** (e.g., `login_failures`) for topics containing a single, discrete event type. // [!code highlight]
 
-5. **`<version>`:** The major contract version (e.g., `v1`, `v2`) to manage breaking changes.
+5. **`<version>`:** The major contract version (e.g., `v1`, `v2`) to manage breaking changes. // [!code highlight]
 
 ## Consequences
 

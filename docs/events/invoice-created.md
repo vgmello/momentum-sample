@@ -28,6 +28,13 @@ The `Invoice` object contains the full invoice entity with all its properties an
 
 ## Technical Details
 
+```csharp
+// Event Definition
+[EventTopic<Invoice>] // [!code highlight]
+public sealed record InvoiceCreated(Invoice Invoice) 
+    : IntegrationEvent<InvoiceCreated>; // [!code highlight]
+```
+
 - **Full Type:** `Billing.Invoices.Contracts.IntegrationEvents.InvoiceCreated`
 - **Namespace:** `Billing.Invoices.Contracts.IntegrationEvents`
 - **Topic Attribute:** `[EventTopic<Invoice>]`
