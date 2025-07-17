@@ -12,10 +12,7 @@ This page serves as a catalog for all Architectural Decision Records (ADRs) made
 
 The following table lists all ADRs in chronological order. Each title links to the full ADR document.
 
-| ID      | Title                                                              | Date       | Status                               |
-| :------ | :----------------------------------------------------------------- | :--------- | :----------------------------------- |
-| ADR-001 | [Use VitePress for Documentation](./001-use-vitepress-for-docs.md) | 2023-10-26 | <Badge type="tip" text="Accepted" /> |
-| ADR-002 | [Use REST for Public APIs](./003-use-rest-for-public-apis.md)      | 2023-11-15 | <Badge type="tip" text="Accepted" /> |
+<!--@include: ./table.md-->
 
 ### Status Meanings
 
