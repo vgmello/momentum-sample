@@ -15,22 +15,7 @@ Invoices are the core financial documents in the billing system that:
 
 The Invoice entity is defined in [`src/Billing/Invoices/Contracts/Models/Invoice.cs:5-26`](https://github.com/yourusername/billing/blob/main/src/Billing/Invoices/Contracts/Models/Invoice.cs#L5-L26):
 
-```csharp
-public record Invoice
-{
-    public required Guid TenantId { get; init; }
-    public required Ulid InvoiceId { get; init; }
-    public required string Name { get; init; }
-    public required InvoiceStatus Status { get; init; }
-    public required decimal Amount { get; init; }
-    public required string Currency { get; init; }
-    public required DateOnly DueDate { get; init; }
-    public required Ulid CashierId { get; init; }
-    public DateTime? PaidAt { get; init; }
-    public DateTime CreatedAt { get; init; }
-    public DateTime UpdatedAt { get; init; }
-}
-```
+<<< @/src/Billing/Invoices/Contracts/Models/Invoice.cs
 
 ## Invoice Status Lifecycle
 
@@ -157,18 +142,7 @@ sequenceDiagram
 
 The [`PaymentReceivedHandler`](https://github.com/yourusername/billing/blob/main/src/Billing.BackOffice/Messaging/Invoices/PaymentReceivedHandler.cs) processes payments asynchronously:
 
-```csharp
-public async Task<Result> Handle(PaymentReceived message)
-{
-    var command = new MarkInvoiceAsPaidCommand
-    {
-        InvoiceId = message.InvoiceId,
-        PaidAt = message.PaymentDate
-    };
-    
-    return await messageBus.SendAsync(command);
-}
-```
+<<< @/src/Billing.BackOffice/Messaging/BillingInboxHandler/PaymentReceivedHandler.cs{11-18}
 
 ## Integration Events
 
@@ -176,55 +150,25 @@ public async Task<Result> Handle(PaymentReceived message)
 
 Published when a new invoice is created.
 
-```csharp
-[EventTopic<InvoiceCreated>("billing.invoices")]
-public record InvoiceCreated(
-    Ulid InvoiceId,
-    string Name,
-    decimal Amount,
-    string Currency,
-    DateOnly DueDate
-);
-```
+<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/InvoiceCreated.cs
 
 ### InvoicePaid
 
 Published when an invoice is marked as paid.
 
-```csharp
-[EventTopic<InvoicePaid>("billing.invoices")]
-public record InvoicePaid(
-    Ulid InvoiceId,
-    DateTime PaidAt,
-    decimal Amount
-);
-```
+<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/InvoicePaid.cs
 
 ### InvoiceCancelled
 
 Published when an invoice is cancelled.
 
-```csharp
-[EventTopic<InvoiceCancelled>("billing.invoices")]
-public record InvoiceCancelled(
-    Ulid InvoiceId,
-    DateTime CancelledAt,
-    string Reason
-);
-```
+<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/InvoiceCancelled.cs
 
 ### PaymentReceived
 
 Published to trigger payment processing.
 
-```csharp
-[EventTopic<PaymentReceived>("billing.payments")]
-public record PaymentReceived(
-    Ulid InvoiceId,
-    decimal Amount,
-    DateTime PaymentDate
-);
-```
+<<< @/src/Billing/Invoices/Contracts/IntegrationEvents/PaymentReceived.cs
 
 ## Database Schema
 
@@ -247,28 +191,7 @@ Location: [`tests/Billing.Tests/Unit/Invoices/`](https://github.com/yourusername
 
 Example from [`CreateInvoiceCommandHandlerTests.cs:14-59`](https://github.com/yourusername/billing/blob/main/tests/Billing.Tests/Unit/Invoices/CreateInvoiceCommandHandlerTests.cs#L14-L59):
 
-```csharp
-[Fact]
-public async Task Handle_ValidCommand_CreatesInvoice()
-{
-    // Arrange
-    var command = new CreateInvoiceCommand
-    {
-        Name = "Test Invoice",
-        Amount = 1000m,
-        Currency = "USD",
-        DueDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
-        CashierId = Ulid.NewUlid()
-    };
-    
-    // Act
-    var result = await handler.Handle(command, CancellationToken.None);
-    
-    // Assert
-    result.IsSuccess.Should().BeTrue();
-    result.Value.Status.Should().Be(InvoiceStatus.Draft);
-}
-```
+<<< @/tests/Billing.Tests/Unit/Invoices/CreateInvoiceCommandHandlerTests.cs{24-44}
 
 ### Integration Tests
 
@@ -318,18 +241,7 @@ While not yet implemented, the architecture supports refund workflows through:
 
 The system uses the `Result<T>` pattern for explicit error handling:
 
-```csharp
-public async Task<Result<Invoice>> Handle(CreateInvoiceCommand command)
-{
-    if (command.Amount <= 0)
-        return Result.Failure<Invoice>("Amount must be positive");
-        
-    if (command.DueDate <= DateOnly.FromDateTime(DateTime.UtcNow))
-        return Result.Failure<Invoice>("Due date must be in the future");
-        
-    // Process invoice creation...
-}
-```
+<<< @/src/Billing/Invoices/Commands/CreateInvoice.cs{29-45}
 
 ## Troubleshooting
 

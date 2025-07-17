@@ -16,16 +16,7 @@ The Cashier model represents these real-world billing personnel digitally, track
 
 The Cashier entity is defined in [`src/Billing/Cashiers/Contracts/Models/Cashier.cs:5-16`](https://github.com/yourusername/billing/blob/main/src/Billing/Cashiers/Contracts/Models/Cashier.cs#L5-L16):
 
-```csharp
-public record Cashier
-{
-    public required Guid TenantId { get; init; }
-    public required Ulid CashierId { get; init; }
-    public required string Name { get; init; }
-    public required string Email { get; init; }
-    public List<CashierPayment> CashierPayments { get; init; } = [];
-}
-```
+<<< @/src/Billing/Cashiers/Contracts/Models/Cashier.cs
 
 ## API Operations
 
@@ -113,41 +104,25 @@ The Cashiers domain publishes integration events for key operations:
 
 Published when a new cashier is added to the system.
 
-```csharp
-[EventTopic<CashierCreated>("billing.cashiers")]
-public record CashierCreated(Ulid CashierId, string Name, string Email);
-```
+<<< @/src/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs
 
 ### CashierUpdated Event
 
 Published when cashier information is modified.
 
-```csharp
-[EventTopic<CashierUpdated>("billing.cashiers")]
-public record CashierUpdated(Ulid CashierId, string Name, string Email);
-```
+<<< @/src/Billing/Cashiers/Contracts/IntegrationEvents/CashierUpdated.cs
 
 ### CashierDeleted Event
 
 Published when a cashier is removed from the system.
 
-```csharp
-[EventTopic<CashierDeleted>("billing.cashiers")]
-public record CashierDeleted(Ulid CashierId);
-```
+<<< @/src/Billing/Cashiers/Contracts/IntegrationEvents/CashierDeleted.cs
 
 ## Payment Processing
 
 Cashiers track payment history through the `CashierPayment` relationship:
 
-```csharp
-public record CashierPayment
-{
-    public required Ulid InvoiceId { get; init; }
-    public required decimal Amount { get; init; }
-    public required DateTime PaymentDate { get; init; }
-}
-```
+<<< @/src/Billing/Cashiers/Contracts/Models/CashierPayment.cs
 
 When an invoice is paid:
 1. Payment is recorded against the invoice
@@ -176,25 +151,7 @@ The Cashiers domain includes comprehensive test coverage:
 Location: [`tests/Billing.Tests/Unit/Cashiers/`](https://github.com/yourusername/billing/tree/main/tests/Billing.Tests/Unit/Cashiers)
 
 Example test structure:
-```csharp
-[Fact]
-public async Task CreateCashier_WithValidData_ShouldSucceed()
-{
-    // Arrange
-    var command = new CreateCashierCommand
-    {
-        Name = "Test Cashier",
-        Email = "test@billing.com"
-    };
-    
-    // Act
-    var result = await handler.Handle(command, CancellationToken.None);
-    
-    // Assert
-    result.IsSuccess.Should().BeTrue();
-    result.Value.Name.Should().Be("Test Cashier");
-}
-```
+<<< @/tests/Billing.Tests/Unit/Cashier/CreateCashierCommandHandlerTests.cs{29-44}
 
 ### Integration Tests
 

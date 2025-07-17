@@ -61,19 +61,7 @@ Commands represent write operations (INSERT, UPDATE, DELETE) and typically retur
 
 Execute stored procedures with automatic parameter mapping:
 
-```csharp
-// From: src/Billing/Invoices/Commands/CreateInvoice.cs:32-41
-[DbCommand(sp: "billing.invoices_create", nonQuery: true)] // [!code highlight]
-public partial record InsertInvoiceCommand(
-    Guid InvoiceId,
-    string Name,
-    string Status,
-    decimal Amount,
-    string? Currency,
-    DateTime? DueDate,
-    Guid? CashierId
-) : ICommand<int>; // [!code highlight]
-```
+<<< @/src/Billing/Invoices/Commands/CreateInvoice.cs{32-41}
 
 **Source Generated Handler:**
 
@@ -126,36 +114,7 @@ public partial record CalculateTaxCommand(
 
 Commands integrate with the Wolverine messaging framework:
 
-```csharp
-// From: src/Billing/Invoices/Commands/CreateInvoice.cs:43-78
-public static async Task<(Result<InvoiceModel>, InvoiceCreated)> Handle(
-    CreateInvoiceCommand command,
-    IMessageBus messaging,
-    CancellationToken cancellationToken)
-{
-    var invoiceId = Guid.CreateVersion7();
-    const string status = "Draft";
-
-    var insertCommand = new InsertInvoiceCommand(
-        invoiceId,
-        command.Name,
-        status,
-        command.Amount,
-        command.Currency,
-        command.DueDate,
-        command.CashierId
-    );
-
-    // Execute the database command through messaging
-    await messaging.InvokeCommandAsync(insertCommand, cancellationToken);
-
-    // Return domain model and integration event
-    var result = new InvoiceModel { /* ... */ };
-    var createdEvent = new InvoiceCreated(result);
-
-    return (result, createdEvent);
-}
-```
+<<< @/src/Billing/Invoices/Commands/CreateInvoice.cs{43-78}
 
 ## Query Patterns
 
@@ -165,11 +124,7 @@ Queries represent read operations (SELECT) and return data objects or collection
 
 Retrieve a single record with automatic mapping:
 
-```csharp
-// From: src/Billing/Invoices/Queries/GetInvoice.cs:14-15
-[DbCommand(fn: "select * from billing.invoices_get_single")]
-public partial record GetInvoiceDbQuery(Guid InvoiceId) : IQuery<InvoiceModel?>;
-```
+<<< @/src/Billing/Invoices/Queries/GetInvoice.cs{14-15}
 
 **Source Generated Handler:**
 
@@ -194,15 +149,7 @@ public static class GetInvoiceDbQueryHandler
 
 Retrieve collections with pagination support:
 
-```csharp
-// From: src/Billing/Invoices/Queries/GetInvoices.cs:13-14
-[DbCommand(fn: "select * from billing.invoices_get")]
-public partial record GetInvoicesDbQuery(
-    int Limit,
-    int Offset,
-    string? Status
-) : IQuery<IEnumerable<InvoiceModel>>;
-```
+<<< @/src/Billing/Invoices/Queries/GetInvoices.cs{13-14}
 
 **Source Generated Handler:**
 
@@ -227,11 +174,7 @@ public static class GetInvoicesDbQueryHandler
 
 Handle custom parameter names and case conversion:
 
-```csharp
-// From: src/Billing/Cashiers/Queries/GetCashier.cs:17-18
-[DbCommand]
-private sealed partial record DbCommand([Column("id")] Guid CashierId);
-```
+<<< @/src/Billing/Cashiers/Queries/GetCashier.cs{17-18}
 
 **Generated `ToDbParams()` method:**
 
@@ -250,11 +193,7 @@ public object ToDbParams()
 
 Automatically convert C# property names to database naming conventions:
 
-```csharp
-// From: src/Billing/Cashiers/Queries/GetCashiers.cs:25-26
-[DbCommand]
-private sealed partial record DbCommand(int Limit, int Offset);
-```
+<<< @/src/Billing/Cashiers/Queries/GetCashiers.cs{25-26}
 
 With `DbParamsCase.SnakeCase`, this generates:
 
@@ -306,31 +245,7 @@ public partial record GetMetricsFromAnalyticsDb(DateTime From, DateTime To) : IQ
 
 Implement proper error handling and validation:
 
-```csharp
-// From: src/Billing/Invoices/Commands/CancelInvoice.cs:26-54
-public static async Task<(Result<InvoiceModel>, InvoiceCancelled?)> Handle(
-    CancelInvoiceCommand command,
-    IMessageBus messaging,
-    CancellationToken cancellationToken)
-{
-    var cancelDbCommand = new CancelInvoiceDbCommand(command.InvoiceId);
-    var rowsAffected = await messaging.InvokeCommandAsync(cancelDbCommand, cancellationToken);
-
-    if (rowsAffected == 0)
-    {
-        var failures = new List<ValidationFailure>
-        {
-            new("InvoiceId", "Invoice not found or cannot be cancelled")
-        };
-        return (failures, null);
-    }
-
-    // Success case
-    var result = new InvoiceModel { /* ... */ };
-    var cancelledEvent = new InvoiceCancelled(command.InvoiceId);
-    return (result, cancelledEvent);
-}
-```
+<<< @/src/Billing/Invoices/Commands/CancelInvoice.cs{26-54}
 
 ### 4. Transaction Management
 
