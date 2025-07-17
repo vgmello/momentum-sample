@@ -5,14 +5,17 @@
   "devDependencies": {
     "@types/node": "^24.0.14",
     "mermaid": "^11.9.0",
+    "tsx": "^4.20.3",
     "vitepress": "^1.6.3"
   },
   "scripts": {
     "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:build": "pnpm run generate:adr-table && vitepress build",
+    "docs:preview": "vitepress preview",
+    "generate:adr-table": "tsx .vitepress/generateAdrTable.ts"
   },
   "dependencies": {
+    "gray-matter": "^4.0.3",
     "yaml": "^2.8.0"
   }
 }
