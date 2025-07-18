@@ -22,7 +22,7 @@ The CQRS implementation follows these core principles:
 
 Each domain (like Cashiers, Invoices, Bills) follows this consistent structure:
 
-```
+</code></pre>
 src/Billing/Cashiers/
 ├── Commands/           # Write operations (what the department does)
 ├── Queries/            # Read operations (what the department knows)
@@ -31,7 +31,7 @@ src/Billing/Cashiers/
 │   └── IntegrationEvents/ # Inter-department notifications
 └── Data/
     └── Entities/       # Database representations
-```
+</code></pre>
 
 ## Command Pattern
 
@@ -47,11 +47,47 @@ Commands represent work orders sent to departments. They follow a simple, consis
 
 ### Command Handler
 
-<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{22-53}
+<pre v-pre class="language-csharp"><code>
+public static partial class CreateCashierCommandHandler
+{
+    [DbCommand(sp: "billing.cashiers_create", nonQuery: true)]
+    public partial record DbCommand(Guid CashierId, string Name, string? Email) : ICommand&lt;int&gt;;
+
+    public static async Task&lt;(Result&lt;CashierModel&gt;, CashierCreated?)&gt; Handle(CreateCashierCommand command, IMessageBus messaging,
+        CancellationToken cancellationToken)
+    {
+        if (command.Name.Contains("error"))
+        {
+            throw new DivideByZeroException("Forced test unhandled exception to simulate error scenarios");
+        }
+
+        var cashierId = Guid.CreateVersion7();
+
+        var insertCommand = new DbCommand(cashierId, command.Name, command.Email);
+
+        await messaging.InvokeCommandAsync(insertCommand, cancellationToken);
+
+        var result = new CashierModel
+        {
+            TenantId = command.TenantId,
+            CashierId = cashierId,
+            Name = command.Name,
+            Email = command.Email
+        };
+
+        var createdEvent = new CashierCreated(result.TenantId, PartitionKeyTest: 0, result);
+
+        return (result, createdEvent);
+    }
+}
+</code></pre>
 
 ### Database Command
 
-<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{24-25}
+<pre v-pre class="language-csharp"><code>
+[DbCommand(sp: "billing.cashiers_create", nonQuery: true)]
+public partial record DbCommand(Guid CashierId, string Name, string? Email) : ICommand&lt;int&gt;;
+</code></pre>
 
 ## Query Pattern
 
@@ -59,15 +95,51 @@ Queries represent information requests to departments. They focus on data retrie
 
 ### Query Structure
 
-<<< @/../src/Billing/Cashiers/Queries/GetCashiers.cs{15-22}
+<pre v-pre class="language-csharp"><code>
+public record GetCashiersQuery : IQuery&lt;IEnumerable&lt;GetCashiersQuery.Result&gt;&gt;
+{
+    [Range(1, 1000)]
+    public int Limit { get; set; } = 1000;
+
+    [Range(0, int.MaxValue)]
+    public int Offset { get; set; }
+
+    public record Result(Guid TenantId, Guid CashierId, string Name, string Email);
+}
+</code></pre>
 
 ### Query Handler
 
-<<< @/../src/Billing/Cashiers/Queries/GetCashiers.cs{24-41}
+<pre v-pre class="language-csharp"><code>
+public static partial class GetCashiersQueryHandler
+{
+    [DbCommand]
+    private sealed partial record DbCommand(int Limit, int Offset);
+
+    public static async Task&lt;IEnumerable&lt;GetCashiersQuery.Result&gt;&gt; Handle(GetCashiersQuery query, NpgsqlDataSource dataSource,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+        const string sql = """
+                               SELECT null::uuid as tenant_id, cashier_id, name, email
+                               FROM billing.cashiers
+                               LIMIT @limit OFFSET @offset
+                           """;
+
+        var cashiers = await connection.QueryAsync&lt;GetCashiersQuery.Result&gt;(sql, new DbCommand(query.Limit, query.Offset).ToDbParams());
+
+        return cashiers;
+    }
+}
+</code></pre>
 
 ### Database Query
 
-<<< @/../src/Billing/Cashiers/Queries/GetCashiers.cs{43-48}
+<pre v-pre class="language-csharp"><code>
+[DbCommand]
+private sealed partial record DbCommand(int Limit, int Offset);
+</code></pre>
 
 ## Models and Contracts
 
@@ -75,13 +147,33 @@ Queries represent information requests to departments. They focus on data retrie
 
 Models represent the "digital paper records" that departments work with:
 
-<<< @/../src/Billing/Cashiers/Contracts/Models/Cashier.cs
+<pre v-pre class="language-csharp"><code>
+public record Cashier
+{
+    public Guid TenantId { get; set; }
+
+    public Guid CashierId { get; set; }
+
+    public required string Name { get; set; }
+
+    public required string Email { get; set; }
+
+    public List&lt;CashierPayment&gt; CashierPayments { get; set; } = [];
+}
+</code></pre>
 
 ### Data Entities
 
 Database entities represent how records are stored:
 
-<<< @/../src/Billing/Cashiers/Data/Entities/Cashier.cs
+<pre v-pre class="language-csharp"><code>
+public record Cashier : Entity
+{
+    public Guid CashierId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Email { get; set; }
+}
+</code></pre>
 
 ## Integration Events
 
@@ -89,17 +181,28 @@ Events are notifications sent between departments when important things happen.
 
 ### Event Structure
 
-<<< @/../src/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs
+<pre v-pre class="language-csharp"><code>
+/// &lt;summary&gt;
+///     Published when a new cashier is successfully created in the billing system. This event contains the complete cashier data and partition
+///     key information for proper message routing.
+/// &lt;/summary&gt;
+/// &lt;remarks&gt;
+///     - The cashier creation process completes successfully
+///     - Some other actions
+/// &lt;/remarks&gt;
+[EventTopic&lt;Cashier&gt;]
+public record CashierCreated([PartitionKey] Guid TenantId, [PartitionKey] int PartitionKeyTest, Cashier Cashier);
+</code></pre>
 
 ### Event Publishing
 
 Events are returned from handlers but not directly published:
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 // In handler - return event to be published
 var createdEvent = new CashierCreated(command.TenantId, command.TenantId.GetHashCode(), result.Value);
 return (result, createdEvent);
-```
+</code></pre>
 
 ## API Integration
 
@@ -107,11 +210,53 @@ Controllers act as the front office reception desk, handling external requests.
 
 ### Controller Pattern
 
-<<< @/../src/Billing.Api/Cashiers/CashiersController.cs{22-41}
+<pre v-pre class="language-csharp"><code>
+/// &lt;returns&gt;The cashier details if found&lt;/returns&gt;
+/// &lt;response code="200" /&gt;
+/// &lt;response code="404"&gt;If the cashier is not found&lt;/response&gt;
+/// &lt;response code="400"&gt;If the provided ID is invalid&lt;/response&gt;
+[HttpGet("{id:guid}")]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+[ProducesResponseType&lt;object&gt;(StatusCodes.Status400BadRequest)]
+public async Task&lt;ActionResult&lt;Cashier&gt;&gt; GetCashier([FromRoute] Guid id, CancellationToken cancellationToken)
+{
+    var cashier = await bus.InvokeQueryAsync(new GetCashierQuery(id), cancellationToken);
+
+    return cashier;
+}
+
+/// &lt;summary&gt;
+///     Retrieves a list of cashiers with optional filtering
+/// &lt;/summary&gt;
+/// &lt;param name="query"&gt;Query parameters for filtering and pagination&lt;/param&gt;
+/// &lt;param name="cancellationToken"&gt;Cancellation token&lt;/param&gt;
+/// &lt;returns&gt;A list of cashiers matching the specified criteria&lt;/returns&gt;
+</code></pre>
 
 ### Result Handling
 
-<<< @/../src/Billing.Api/Cashiers/CashiersController.cs{43-61}
+<pre v-pre class="language-csharp"><code>
+/// &lt;response code="400"&gt;If query parameters are invalid&lt;/response&gt;
+[HttpGet]
+[ProducesResponseType&lt;object&gt;(StatusCodes.Status400BadRequest)]
+public async Task&lt;ActionResult&lt;IEnumerable&lt;GetCashiersQuery.Result&gt;&gt;&gt; GetCashiers([FromQuery] GetCashiersQuery query,
+    CancellationToken cancellationToken)
+{
+    var cashiers = await bus.InvokeQueryAsync(query, cancellationToken);
+
+    return Ok(cashiers);
+}
+
+/// &lt;summary&gt;
+///     Creates a new cashier in the system
+/// &lt;/summary&gt;
+/// &lt;param name="command"&gt;The cashier creation request containing name and email&lt;/param&gt;
+/// &lt;param name="cancellationToken"&gt;Cancellation token&lt;/param&gt;
+/// &lt;returns&gt;The created cashier details&lt;/returns&gt;
+/// &lt;response code="201" /&gt;
+/// &lt;response code="400"&gt;If the request data is invalid or validation fails&lt;/response&gt;
+/// &lt;response code="409"&gt;If a cashier with the same email already exists&lt;/response&gt;
+</code></pre>
 
 ## Database Interaction
 
@@ -119,43 +264,53 @@ Database operations use the `[DbCommand]` attribute for automatic code generatio
 
 ### Command Database Operations
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 [DbCommand(sp: "billing.cashiers_create", nonQuery: true)]
 public partial record InsertCashierCommand(
     Guid TenantId,
     Guid CashierId,
     string Name,
     string Email
-) : ICommand<int>;
-```
+) : ICommand&lt;int&gt;;
+</code></pre>
 
 ### Query Database Operations
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 [DbCommand(fn: "SELECT * FROM billing.cashiers_get")]
 public partial record GetCashiersDbQuery(
     int Limit,
     int Offset
-) : IQuery<IEnumerable<CashierModel>>;
-```
+) : IQuery&lt;IEnumerable&lt;CashierModel&gt;&gt;;
+</code></pre>
 
 ## Error Handling
 
-The system uses the `Result<T>` pattern for explicit error handling without exceptions.
+The system uses the `Result&lt;T&gt;` pattern for explicit error handling without exceptions.
 
 ### Result Pattern
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 // Success case
 return Result.Success(cashier);
 
 // Failure case
-return Result.Failure<CashierModel>(new ValidationFailure("Name", "Name is required"));
-```
+return Result.Failure&lt;CashierModel&gt;(new ValidationFailure("Name", "Name is required"));
+</code></pre>
 
 ### Validation Pattern
 
-<<< @/../src/Billing/Cashiers/Commands/CreateCashier.cs{20-25}
+<pre v-pre class="language-csharp"><code>
+public class CreateCashierValidator : AbstractValidator&lt;CreateCashierCommand&gt;
+{
+    public CreateCashierValidator()
+    {
+        RuleFor(c =&gt; c.Name).NotEmpty();
+        RuleFor(c =&gt; c.Name).MaximumLength(100);
+        RuleFor(c =&gt; c.Name).MinimumLength(2);
+    }
+}
+</code></pre>
 
 ## Testing Strategy
 
@@ -163,13 +318,44 @@ return Result.Failure<CashierModel>(new ValidationFailure("Name", "Name is requi
 
 Tests focus on business logic without infrastructure concerns:
 
-<<< @/../tests/Billing.Tests/Unit/Cashier/CreateCashierCommandHandlerTests.cs{24-44}
+<pre v-pre class="language-csharp"><code>[Test]
+public async Task Handle_Should_CreateCashier_When_ValidCommand()
+{
+    // Arrange
+    var command = new CreateCashierCommand(Guid.NewGuid(), "John Doe", "john@example.com");
+    var messaging = Substitute.For&lt;IMessageBus&gt;();
+    
+    // Act
+    var (result, integrationEvent) = await CreateCashierCommandHandler.Handle(command, messaging, CancellationToken.None);
+    
+    // Assert
+    result.Should().NotBeNull();
+    result.Name.Should().Be("John Doe");
+    result.Email.Should().Be("john@example.com");
+    integrationEvent.Should().NotBeNull();
+}
+</code></pre>
 
 ### Integration Testing
 
 Integration tests verify complete request/response cycles:
 
-<<< @/../tests/Billing.Tests/Integration/Cashiers/CreateCashierIntegrationTests.cs{21-42}
+<pre v-pre class="language-csharp"><code>[Test]
+public async Task CreateCashier_Should_ReturnCreatedResult_When_ValidRequest()
+{
+    // Arrange
+    var request = new CreateCashierCommand(Guid.NewGuid(), "Jane Smith", "jane@example.com");
+    
+    // Act
+    var response = await Client.PostAsJsonAsync("/api/v1/cashiers", request);
+    
+    // Assert
+    response.StatusCode.Should().Be(HttpStatusCode.Created);
+    var cashier = await response.Content.ReadFromJsonAsync&lt;Cashier&gt;();
+    cashier.Should().NotBeNull();
+    cashier.Name.Should().Be("Jane Smith");
+}
+</code></pre>
 
 ## Message Bus Integration
 
@@ -177,20 +363,20 @@ The message bus acts as the internal communication system between departments.
 
 ### Command Execution
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 // Execute command
 var result = await messaging.InvokeCommandAsync(command, cancellationToken);
 
 // Execute query
 var data = await messaging.InvokeQueryAsync(query, cancellationToken);
-```
+</code></pre>
 
 ### Event Publishing
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 // Events are automatically published when returned from handlers
 return (result, new CashierCreated(tenantId, partitionKey, cashier));
-```
+</code></pre>
 
 ## Back Office Processing
 
@@ -198,7 +384,23 @@ Back office operations handle asynchronous processing through event handlers.
 
 ### Event Handler Pattern
 
-<<< @/../src/Billing.BackOffice/Messaging/BillingInboxHandler/CashierCreatedHandler.cs
+<pre v-pre class="language-csharp"><code>
+public class CashierCreatedHandler : IIntegrationEventHandler&lt;CashierCreated&gt;
+{
+    public async Task Handle(CashierCreated integrationEvent, CancellationToken cancellationToken)
+    {
+        // Handle the cashier created event in the back office
+        // This could include updating read models, sending notifications, etc.
+        await ProcessCashierCreatedAsync(integrationEvent.Cashier, cancellationToken);
+    }
+    
+    private async Task ProcessCashierCreatedAsync(Cashier cashier, CancellationToken cancellationToken)
+    {
+        // Back office processing logic
+        Console.WriteLine($"Processing cashier created: {cashier.Name}");
+    }
+}
+</code></pre>
 
 ## Best Practices
 
@@ -207,7 +409,7 @@ Back office operations handle asynchronous processing through event handlers.
 -   **Single responsibility**: Each command does one thing
 -   **Immutable**: Use record types for command definitions
 -   **Validated**: Include validation rules close to the command
--   **Explicit results**: Return Result<T> instead of throwing exceptions
+-   **Explicit results**: Return Result&lt;T&gt; instead of throwing exceptions
 
 ### 2. Query Design
 
@@ -241,9 +443,9 @@ Back office operations handle asynchronous processing through event handlers.
 
 ### ❌ Don't Do This
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 // Complex inheritance hierarchies
-public abstract class BaseCommandHandler<TCommand, TResult> { }
+public abstract class BaseCommandHandler&lt;TCommand, TResult&gt; { }
 
 // Mutable commands
 public class CreateCashierCommand
@@ -257,30 +459,30 @@ public void Handle(CreateCashierCommand command)
     if (string.IsNullOrEmpty(command.Name))
         throw new ArgumentException("Name is required");  // Don't throw!
 }
-```
+</code></pre>
 
 ### ✅ Do This Instead
 
-```csharp
+<pre v-pre class="language-csharp"><code>
 // Simple static handlers
 public static class CreateCashierCommandHandler
 {
-    public static async Task<(Result<CashierModel>, CashierCreated)> Handle(...)
+    public static async Task&lt;(Result&lt;CashierModel&gt;, CashierCreated)&gt; Handle(...)
 }
 
 // Immutable commands
 public record CreateCashierCommand(
     string Name,
     string Email
-) : ICommand<Result<CashierModel>>;
+) : ICommand&lt;Result&lt;CashierModel&gt;&gt;;
 
 // Result pattern for business logic
-public static async Task<Result<CashierModel>> Handle(...)
+public static async Task&lt;Result&lt;CashierModel&gt;&gt; Handle(...)
 {
     if (string.IsNullOrEmpty(command.Name))
-        return Result.Failure<CashierModel>(new ValidationFailure("Name", "Name is required"));
+        return Result.Failure&lt;CashierModel&gt;(new ValidationFailure("Name", "Name is required"));
 }
-```
+</code></pre>
 
 ## Implementation Checklist
 
@@ -291,7 +493,7 @@ When implementing a new domain, follow this checklist:
 -   [ ] Create command record with validation
 -   [ ] Implement static handler method
 -   [ ] Add database command with `[DbCommand]` attribute
--   [ ] Return Result<T> and integration event
+-   [ ] Return Result&lt;T&gt; and integration event
 -   [ ] Add unit tests for handler logic
 
 ### Queries
