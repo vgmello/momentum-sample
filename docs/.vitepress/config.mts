@@ -10,12 +10,9 @@ const allMarkdownTransformers: MarkdownOptions = {
         dark: "github-dark",
     },
 
-    preConfig: (md) => {
-        snippetPluginExt(md);
-    },
-
     config: (md) => {
         MermaidExample(md);
+        snippetPluginExt(md);
     },
 };
 
@@ -23,6 +20,26 @@ export default defineConfig({
     title: "Billing Solution",
     description: "Comprehensive billing management system with Cashiers, Invoices, and Bills",
     markdown: allMarkdownTransformers,
+    async transformPageData(pageData) {
+        // This runs before Vue compilation and allows us to modify the final HTML
+        return pageData;
+    },
+    transformHtml: (code, id, ctx) => {
+        // Add v-pre to Vue-sensitive language code blocks to prevent Vue compilation
+        // This catches both regular code blocks and snippet imports
+        return code.replace(
+            /<pre([^>]*?)class="([^"]*?language-(csharp|cs|java|typescript|ts|tsx|cpp|c|h)[^"]*?)"([^>]*?)(?<!v-pre[^>]*?)>/g,
+            '<pre$1class="$2"$4 v-pre>'
+        );
+    },
+    vue: {
+        compilerOptions: {
+            isCustomElement: (tag) => {
+                // Treat common XML documentation tags as custom elements to prevent Vue from trying to parse them
+                return ['summary', 'param', 'returns', 'response', 'example', 'remarks', 'c', 'code', 'see', 'seealso', 'exception', 'value', 'typeparam'].includes(tag);
+            }
+        }
+    },
     themeConfig: {
         nav: [
             { text: "Home", link: "/" },
