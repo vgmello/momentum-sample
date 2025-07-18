@@ -1,10 +1,24 @@
 {
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
   "devDependencies": {
+    "@types/node": "^24.0.14",
+    "markdown-it": "^14.1.0",
+    "mermaid": "^11.9.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
     "vitepress": "^1.6.3"
   },
   "scripts": {
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:dev": "pnpm run generate:adr-table && vitepress dev",
+    "docs:build": "pnpm run generate:adr-table && vitepress build",
+    "docs:preview": "vitepress preview",
+    "generate:adr-table": "tsx .vitepress/generateAdrTable.ts"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "yaml": "^2.8.0"
   }
 }

@@ -23,6 +23,9 @@ public class UpdateCashierValidator : AbstractValidator<UpdateCashierCommand>
 
 public static partial class UpdateCashierCommandHandler
 {
+    /// <summary>
+    ///     Just to demonstrate you can call the DbCommand record anything
+    /// </summary>
     [DbCommand(sp: "billing.cashiers_update", nonQuery: true)]
     public partial record UpdateCashierDbCommand(Guid CashierId, string Name, string? Email) : ICommand<int>;
 

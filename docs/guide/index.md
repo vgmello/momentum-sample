@@ -1,45 +1,139 @@
-# Billing Solution
+# Billing Solution Overview
 
-The Billing Service manages cashiers, invoices, and payment processing within the broader platform. It provides both REST and gRPC APIs for managing billing operations and integrates with other services through event-driven messaging.
+Welcome to the Billing Solution documentation. This comprehensive system provides enterprise-grade billing management capabilities built on modern architectural patterns.
 
-## TL;DR
+## System Overview
 
-This codebase is designed as an app template that mirrors real-world billing department operations\*, making it intuitive for junior engineers and non-technical product people to understand - each folder under Billing represents a sub-department with its main activities and processes, categorized as commands or queries. The design focuses on minimal ceremony code, avoiding almost all common tech abstractions, treats infrastructure like office utilities, uses digital representations of what would be "paper" records that can't change themselves but can be modified by external actors, Front office/desk operations are exposed as public sync APIs, and back office operations are supported by async event handlers.
-The aim was for it to be extremely simple to use and very developer-friendly, however, as a positive, unexpected side effect, the simplicity and real-world mirroring approach also make the codebase naturally LLM-friendly, modern models can easily understand code that follows familiar real-world patterns.
+The Billing Solution is a domain-driven application that manages the complete billing lifecycle for organizations. Built with Vertical Slice Architecture principles and event-driven patterns, it provides a scalable and maintainable foundation for billing operations.
 
-## Code Structure and Design Philosophy
+## Design Philosophy
 
-### Overview
+This codebase follows a real-world mirroring approach:
 
-This codebase is intentionally structured to mirror the real-world operations and organizational structure of a billing department.
-Each part of the code corresponds or should correspond directly to a real-world role or operation, ensuring that the code remains 100% product-oriented and easy to understand.
-The idea is that main operations/actions would be recognizable by a non-technical product person.
+-   **Product-Oriented**: Each folder represents a department with recognizable operations
+-   **Minimal Abstractions**: No unnecessary layers - only what represents real-world entities
+-   **Simple Records**: Invoices and cashiers are data records, not smart objects
+-   **Clear Separation**: Front office (sync APIs) vs back office (async processing)
 
-### Real-World Mirroring
+## Project Structure
 
-For instance, if the billing department handles creating invoices, the code includes a clear and
-direct set of actions to handle invoice creation.
-Smaller tasks, or sub-actions, needed to complete a main action are also represented in a similar manner.
-If a sub-action is only used within one main action, it remains nested inside that operation. If it needs to be reused by multiple operations,
-it is extracted and made reusable, but still mirroring the real-world scenario.
+```
+.
+├── docs/                            # DocFX documentation system
+├── infra/                           # Infrastructure and database
+│   └── Billing.Database/            # Liquibase Database project
+├── src/                             # Source code projects
+│   ├── Billing/                     # Domain logic
+│   ├── Billing.Api/                 # REST/gRPC endpoints
+│   ├── Billing.AppHost/             # .NET Aspire orchestration
+│   ├── Billing.BackOffice/          # Background processing
+│   ├── Billing.BackOffice.Orleans/  # Orleans stateful processing
+│   └── Billing.Contracts/           # Integration events and models
+├── tests/                           # Testing projects
+│   └── Billing.Tests/               # Unit, Integration, and Architecture tests
+└── libs/                            # Shared libraries
+    └── Operations/                  # Operations libs
+        ├── src/                     # Platform source code
+        │   ├── Operations.Extensions.*
+        │   ├── Operations.ServiceDefaults.*
+        │   └── ...
+        └── tests/                   # Platform tests
+```
 
-### Avoiding Unnecessary Abstractions
+## Core Domains
 
-This design philosophy avoids unnecessary abstractions. There are no additional layers like repositories or services unless they represent
-something that exists in the real department. Infrastructure elements like logging or authorization are present as they support the system’s
-functionality, same as water pipes and electricity support a billing department office. Even the database is viewed as a digital parallel to a
-real-world archive or filing system.
+### Cashiers
 
-### No "Domain" Objects
+The Cashiers domain manages the personnel responsible for handling payments and billing operations. Key features include:
 
-A key principle is the absence of smart objects. This means that an invoice, for example, is not an object that can change itself.
-Instead, it is simply treated as a digital record, and all modifications are performed by "external" actors (something is changing the invoice,
-the invoice does not change itself). This ensures that the code reflects digital representations of real-world entities and processes,
-rather than trying to replicate objects with their own behaviors.
+-   Complete CRUD operations for cashier management
+-   Event-driven workflows for cashier lifecycle
+-   Payment tracking and reconciliation
+-   Integration with invoice processing
 
-### Synchronous and Asynchronous Operations
+[Learn more about Cashiers →](/guide/cashiers/)
 
-The codebase also distinguishes between synchronous and asynchronous operations.
-The API represents the front office of the billing department, handling synchronous operations where immediate responses are expected.
-In contrast, the back office is represented by asynchronous operations that do not require immediate responses, allowing for efficient,
-behind-the-scenes processing.
+### Invoices
+
+The Invoices domain handles the complete invoice lifecycle from creation to payment. Core capabilities:
+
+-   Invoice creation with validation
+-   Status management (Draft, Finalized, Paid, Cancelled)
+-   Payment processing workflows
+-   Automated event-driven notifications
+
+[Learn more about Invoices →](/guide/invoices/)
+
+### Bills
+
+The Bills domain provides comprehensive bill management functionality (coming soon):
+
+-   Bill creation and tracking
+-   Recurring billing support
+-   Integration with invoicing system
+
+[Learn more about Bills →](/guide/bills/)
+
+## Architecture Highlights
+
+### Vertical Slice Architecture
+
+-   TODO: Fill the details
+
+[Explore the Architecture →](/arch/)
+
+### Event-Driven Design
+
+-   Integration events for cross-domain communication
+-   Event sourcing for audit trails
+-   Asynchronous processing with message queues
+-   Real-time updates via event streams
+
+[Learn about Events →](/arch/events)
+
+### Technology Stack
+
+-   **.NET 9**: Latest framework features and performance
+-   **PostgreSQL**: Robust data persistence with Liquibase migrations
+-   **Docker & Aspire**: Container orchestration and local development
+-   **Orleans**: Actor-based distributed processing
+
+## Getting Started
+
+Ready to begin? Follow our comprehensive getting started guide:
+
+1. **Setup Development Environment**: Install prerequisites and tools
+2. **Run the Application**: Choose between Aspire, Docker, or manual setup
+3. **Make Your First API Call**: Create cashiers and invoices
+4. **Explore the Codebase**: Understand the project structure
+
+[Get Started →](/guide/getting-started)
+
+## Developer Resources
+
+### For New Developers
+
+-   [Development Environment Setup](/guide/dev-setup)
+-   [First Contribution Guide](/guide/first-contribution)
+-   [Debugging Tips](/guide/debugging)
+
+### API Documentation
+
+-   [REST API Reference](/api/)
+-   [Integration Events](/events/)
+-   [gRPC Services](/api/grpc)
+
+### Advanced Topics
+
+-   [CQRS Implementation](/arch/cqrs)
+-   [Error Handling Patterns](/arch/error-handling)
+-   [Testing Strategies](/arch/testing)
+
+The design makes the codebase intuitive for developers, product teams, and even AI assistants to understand and work with.
+
+## Next Steps
+
+-   **Explore the Domains**: Deep dive into [Cashiers](/guide/cashiers/), [Invoices](/guide/invoices/), or [Bills](/guide/bills/)
+-   **Understand the Architecture**: Learn about our [architectural patterns](/arch/)
+-   **Start Contributing**: Follow our [development guide](/guide/dev-setup)
+-   **Review the APIs**: Check out the [API documentation](/api/)

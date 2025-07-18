@@ -418,8 +418,7 @@ FodyWeavers.xsd
 *.msp
 
 # Docs
-docs/_site
-docs/docfx/api
+docs/reference
 docs/.vitepress/cache
 docs/.vitepress/dist
 
@@ -434,3 +433,7 @@ docs/.vitepress/dist
 ._*
 **/._bin
 **/._obj
+temp/
+requirements/
+
+_temp

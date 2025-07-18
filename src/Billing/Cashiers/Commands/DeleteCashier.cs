@@ -18,12 +18,12 @@ public class DeleteCashierValidator : AbstractValidator<DeleteCashierCommand>
 public static partial class DeleteCashierCommandHandler
 {
     [DbCommand(sp: "billing.cashiers_delete", nonQuery: true)]
-    public partial record DeleteCashierDbCommand(Guid CashierId) : ICommand<int>;
+    public partial record DbCommand(Guid CashierId) : ICommand<int>;
 
     public static async Task<(Result<bool>, CashierDeleted?)> Handle(DeleteCashierCommand command, IMessageBus messaging,
         CancellationToken cancellationToken)
     {
-        var deleteDbCommand = new DeleteCashierDbCommand(command.CashierId);
+        var deleteDbCommand = new DbCommand(command.CashierId);
 
         var rowsAffected = await messaging.InvokeCommandAsync(deleteDbCommand, cancellationToken);
 

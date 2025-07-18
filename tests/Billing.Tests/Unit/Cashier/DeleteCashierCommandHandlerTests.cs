@@ -17,7 +17,7 @@ public class DeleteCashierCommandHandlerTests
         var messagingMock = Substitute.For<IMessageBus>();
         var cashierId = Guid.NewGuid();
 
-        messagingMock.InvokeCommandAsync(Arg.Any<DeleteCashierCommandHandler.DeleteCashierDbCommand>(), Arg.Any<CancellationToken>())
+        messagingMock.InvokeCommandAsync(Arg.Any<DeleteCashierCommandHandler.DbCommand>(), Arg.Any<CancellationToken>())
             .Returns(1);
 
         var command = new DeleteCashierCommand(cashierId);
@@ -37,7 +37,7 @@ public class DeleteCashierCommandHandlerTests
 
         // Verify that messaging was called with correct parameters
         await messagingMock.Received(1).InvokeCommandAsync(
-            Arg.Is<DeleteCashierCommandHandler.DeleteCashierDbCommand>(cmd => cmd.CashierId == cashierId),
+            Arg.Is<DeleteCashierCommandHandler.DbCommand>(cmd => cmd.CashierId == cashierId),
             Arg.Any<CancellationToken>());
     }
 
@@ -48,7 +48,7 @@ public class DeleteCashierCommandHandlerTests
         var messagingMock = Substitute.For<IMessageBus>();
         var cashierId = Guid.NewGuid();
 
-        messagingMock.InvokeCommandAsync(Arg.Any<DeleteCashierCommandHandler.DeleteCashierDbCommand>(), Arg.Any<CancellationToken>())
+        messagingMock.InvokeCommandAsync(Arg.Any<DeleteCashierCommandHandler.DbCommand>(), Arg.Any<CancellationToken>())
             .Returns(0); // Simulating non-existent cashier
 
         var command = new DeleteCashierCommand(cashierId);

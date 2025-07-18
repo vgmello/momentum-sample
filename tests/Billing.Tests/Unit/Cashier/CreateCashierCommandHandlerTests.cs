@@ -16,7 +16,7 @@ public class CreateCashierCommandHandlerTests
         // Arrange
         var messagingMock = Substitute.For<IMessageBus>();
 
-        messagingMock.InvokeCommandAsync(Arg.Any<CreateCashierCommandHandler.InsertCashierCommand>(), Arg.Any<CancellationToken>())
+        messagingMock.InvokeCommandAsync(Arg.Any<CreateCashierCommandHandler.DbCommand>(), Arg.Any<CancellationToken>())
             .Returns(1);
 
         var command = new CreateCashierCommand(Guid.Empty, "John Doe", "john.doe@example.com");
@@ -41,7 +41,7 @@ public class CreateCashierCommandHandlerTests
 
         // Verify that messaging was called with correct parameters
         await messagingMock.Received(1).InvokeCommandAsync(
-            Arg.Is<CreateCashierCommandHandler.InsertCashierCommand>(cmd =>
+            Arg.Is<CreateCashierCommandHandler.DbCommand>(cmd =>
                 cmd.CashierId == cashier.CashierId &&
                 cmd.Name == "John Doe" &&
                 cmd.Email == "john.doe@example.com"),
@@ -53,7 +53,7 @@ public class CreateCashierCommandHandlerTests
     {
         // Arrange
         var messagingMock = Substitute.For<IMessageBus>();
-        messagingMock.InvokeCommandAsync(Arg.Any<CreateCashierCommandHandler.InsertCashierCommand>(), Arg.Any<CancellationToken>())
+        messagingMock.InvokeCommandAsync(Arg.Any<CreateCashierCommandHandler.DbCommand>(), Arg.Any<CancellationToken>())
             .Returns(1);
 
         var command1 = new CreateCashierCommand(Guid.Empty, "Cashier 1", "cashier1@test.com");

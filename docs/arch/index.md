@@ -1,71 +1,315 @@
-# Billing Architecture
+# Architecture Overview
 
-The Billing Service is part of a .NET 9 microservices system built using Domain-Driven Design principles. It provides a complete billing solution with modern web UI and comprehensive testing. It handles:
+The Billing Solution follows Vertical Slice Architecture principles with CQRS patterns to ensure maintainability, testability, and scalability. This architecture separates concerns into distinct layers while maintaining clear dependency flows.
 
--   **Cashier Management**: Create and manage cashiers with multi-currency support
--   **Invoice Processing**: Handle invoice lifecycle with Orleans-based stateful processing
--   **Payment Integration**: Process payments and emit integration events
--   **Cross-Service Integration**: React to business events from other services like Accounting
--   **Modern Web UI**: SvelteKit-based responsive web application
--   **Comprehensive Testing**: Unit, integration, and end-to-end testing with real browsers
+## Architecture Layers
 
-## Service Architecture
+```mermaid
+graph TB
+    subgraph "Presentation Layer"
+        API[Billing.Api<br/>REST & gRPC Endpoints]
+        WebUI[Web UI<br/>SvelteKit Frontend]
+    end
 
-The solution follows a microservices architecture with shared platform libraries:
+    subgraph "Application Layer"
+        Commands[Commands<br/>Write Operations]
+        Queries[Queries<br/>Read Operations]
+        Handlers[Command/Query Handlers]
+        Events[Integration Events]
+    end
 
+    subgraph "Domain Layer"
+        Entities[Domain Entities<br/>Cashier, Invoice, Bill]
+        ValueObjects[Value Objects<br/>Money, Currency]
+        DomainEvents[Domain Events]
+        Rules[Business Rules]
+    end
+
+    subgraph "Infrastructure Layer"
+        Database[(PostgreSQL<br/>Database)]
+        MessageBus[Message Bus<br/>Wolverine]
+        Orleans[Orleans Grains<br/>Stateful Processing]
+        External[External Services]
+    end
+
+    API --> Commands
+    API --> Queries
+    WebUI --> API
+    Commands --> Handlers
+    Queries --> Handlers
+    Handlers --> Entities
+    Handlers --> Database
+    Handlers --> MessageBus
+    Events --> MessageBus
+    Orleans --> Database
+    MessageBus --> Orleans
 ```
-.
-│   ├── docs/                        # DocFX documentation system
-│   ├── infra/                       # Infrastructure and database
-│   │   └── Billing.Database/        # Liquibase Database project
-├── src/                         # Source code projects
-│   │   ├── Billing/                 # Domain logic
-│   │   ├── Billing.Api/             # REST/gRPC endpoints
-│   │   ├── Billing.AppHost/         # .NET Aspire orchestration
-│   │   ├── Billing.BackOffice/      # Background processing
-│   │   ├── Billing.BackOffice.Orleans/  # Orleans stateful processing
-│   │   └── Billing.Contracts/       # Integration events and models
-│   └── test/                        # Testing projects
-│       └── Billing.Tests/           # Unit, Integration, and Architecture tests
-└── libs/                            # Shared libraries
-    └── Operations/                  # Platform operations framework
-        ├── docs/                    # Platform documentation
-        ├── src/                     # Platform source code
-        │   ├── Operations.Extensions/
-        │   ├── Operations.Extensions.Abstractions/
-        │   ├── Operations.Extensions.SourceGenerators/
-        │   ├── Operations.ServiceDefaults/
-        │   └── Operations.ServiceDefaults.Api/
-        └── tests/                   # Platform tests
+
+## Core Principles
+
+### 1. Dependency Inversion
+
+-   **Domain Layer** has no dependencies on infrastructure
+-   **Application Layer** depends only on domain abstractions
+-   **Infrastructure Layer** implements interfaces defined in application layer
+-   **Presentation Layer** orchestrates application services
+
+### 2. Single Responsibility
+
+-   Each layer has a clear, focused responsibility
+-   Domain logic is isolated from infrastructure concerns
+-   Business rules are separated from application workflows
+
+### 3. Testability
+
+-   Dependencies are injected through interfaces
+-   Domain logic can be unit tested without infrastructure
+-   Integration tests verify complete workflows
+
+## Domain Layer
+
+Location: [`src/Billing/`](https://github.com/yourusername/billing/tree/main/src/Billing)
+
+### Entities
+
+Core business objects that represent real-world concepts:
+
+```csharp
+// Cashier entity with business identity
+public record Cashier
+{
+    public required Guid TenantId { get; init; }
+    public required Ulid CashierId { get; init; }
+    public required string Name { get; init; }
+    public required string Email { get; init; }
+    public List<CashierPayment> CashierPayments { get; init; } = [];
+}
 ```
 
-### Service Components
+### Value Objects
 
-#### **Billing Services**
+Immutable objects that describe aspects of the domain:
 
--   **Billing.Api** - Dual-protocol API (REST + gRPC) for cashier and invoice management
--   **Billing.BackOffice** - Event-driven background processing with Wolverine
--   **Billing.BackOffice.Orleans** - Stateful invoice processing using Orleans actors (3-replica cluster)
--   **Billing.Contracts** - Integration events and shared models for cross-service communication
--   **Billing** (Core) - Domain entities, commands, queries, and business logic with DDD patterns
--   **Billing.AppHost** - .NET Aspire orchestration with comprehensive service discovery
+```csharp
+public record Money(decimal Amount, Currency Currency);
+public record Currency(string Code, string Symbol);
+```
 
-#### **Platform Operations Libraries**
+### Domain Events
 
--   **Operations.ServiceDefaults** - Core infrastructure patterns (logging, health checks, messaging)
--   **Operations.ServiceDefaults.Api** - API-specific extensions (OpenAPI, gRPC, endpoint filters)
--   **Operations.Extensions** - Extension methods and utility implementations
--   **Operations.Extensions.Abstractions** - Core abstractions and interfaces
--   **Operations.Extensions.SourceGenerators** - Compile-time code generators for database operations
+Events that represent business state changes:
 
-#### **Infrastructure & Documentation**
+```csharp
+public record CashierCreated(Ulid CashierId, string Name, string Email);
+public record InvoicePaid(Ulid InvoiceId, DateTime PaidAt, decimal Amount);
+```
 
--   **Billing.Database** - Liquibase-based database management with multi-database pattern
--   **Billing/docs/** - Service-specific DocFX documentation
--   **Operations/docs/** - Platform framework documentation with ADRs and code samples
+## Application Layer
 
-#### **Testing**
+Location: [`src/Billing/*/Commands/`](https://github.com/yourusername/billing/tree/main/src/Billing) and [`src/Billing/*/Queries/`](https://github.com/yourusername/billing/tree/main/src/Billing)
 
--   **Billing.Tests** - Comprehensive testing suite with unit, integration, and architecture tests
--   **Operations.Extensions.Tests** - Platform library unit tests
--   **Operations.Extensions.SourceGenerators.Tests** - Source generator validation tests
+### CQRS Implementation
+
+**Commands** (Write Operations):
+
+-   Create, Update, Delete operations
+-   Business workflow orchestration
+-   Event publishing
+
+**Queries** (Read Operations):
+
+-   Data retrieval with filtering
+-   Pagination support
+-   Optimized for read performance
+
+### Command Example
+
+```csharp
+[DbCommand(sp: "billing.invoices_create")]
+public record CreateInvoiceCommand : IRequest<Result<Invoice>>
+{
+    public required string Name { get; init; }
+    public required decimal Amount { get; init; }
+    public required string Currency { get; init; }
+    public required DateOnly DueDate { get; init; }
+    public required Ulid CashierId { get; init; }
+}
+```
+
+### Source Generation
+
+The `[DbCommand]` attribute enables compile-time code generation:
+
+```csharp
+// Generated handler code
+public partial class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Result<Invoice>>
+{
+    public async Task<Result<Invoice>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
+    {
+        // Generated database call
+        var invoice = await ExecuteStoredProcedure(request);
+
+        // Generated event publishing
+        await PublishEvent(new InvoiceCreated(invoice.InvoiceId, invoice.Name, invoice.Amount));
+
+        return Result.Success(invoice);
+    }
+}
+```
+
+## Infrastructure Layer
+
+### Database Integration
+
+**PostgreSQL with Dapper**:
+
+-   Connection management through `IDbConnection`
+-   Stored procedure execution with parameter mapping
+-   Transaction support for consistency
+
+**Liquibase Migrations**:
+
+-   Version-controlled schema changes
+-   Database setup automation
+-   Multi-environment support
+
+### Message Bus
+
+**Wolverine Integration**:
+
+-   Event publishing and subscription
+-   Message routing and transformation
+-   Retry policies and dead letter queues
+
+### Orleans Grains
+
+**Stateful Processing**:
+
+-   Invoice state management
+-   Long-running workflows
+-   Distributed actor model
+
+## Presentation Layer
+
+Location: [`src/Billing.Api/`](https://github.com/yourusername/billing/tree/main/src/Billing.Api)
+
+### REST API
+
+**ASP.NET Core Controllers**:
+
+-   HTTP endpoint definitions
+-   Request/response mapping
+-   Authentication and authorization
+
+**OpenAPI Documentation**:
+
+-   Swagger/Scalar UI integration
+-   Request/response schemas
+-   API versioning support
+
+### gRPC Services
+
+**Protocol Buffers**:
+
+-   Type-safe service definitions
+-   High-performance communication
+-   Streaming support
+
+## Cross-Cutting Concerns
+
+### Error Handling
+
+The `Result<T>` pattern provides explicit error handling:
+
+```csharp
+public class Result<T>
+{
+    public bool IsSuccess { get; private init; }
+    public T Value { get; private init; }
+    public string Error { get; private init; }
+
+    public static Result<T> Success(T value) => new() { IsSuccess = true, Value = value };
+    public static Result<T> Failure(string error) => new() { IsSuccess = false, Error = error };
+}
+```
+
+### Logging
+
+**Serilog Configuration**:
+
+-   Structured logging with correlation IDs
+-   Context enrichment for requests
+-   Multiple sinks (Console, File, Database)
+
+### Validation
+
+**FluentValidation**:
+
+-   Command validation before processing
+-   Business rule enforcement
+-   Clear error messages
+
+## Testing Strategy
+
+### Unit Tests
+
+**Domain Testing**:
+
+-   Business logic validation
+-   Entity behavior verification
+-   Value object immutability
+
+**Command/Query Testing**:
+
+-   Handler logic validation
+-   Mock infrastructure dependencies
+-   Result pattern verification
+
+### Integration Tests
+
+**Full Stack Testing**:
+
+-   Database integration with TestContainers
+-   Event publishing verification
+-   API endpoint testing
+
+### Architecture Tests
+
+**NetArchTest Rules**:
+
+-   Dependency direction enforcement
+-   Layer isolation verification
+-   Naming convention validation
+
+## Benefits
+
+### Maintainability
+
+-   Clear separation of concerns
+-   Reduced coupling between layers
+-   Easy to modify and extend
+
+### Testability
+
+-   Isolated business logic
+-   Mockable dependencies
+-   Fast unit test execution
+
+### Scalability
+
+-   Horizontal scaling with Orleans
+-   Database read/write separation
+-   Event-driven asynchronous processing
+
+### Developer Experience
+
+-   Clear code organization
+-   Consistent patterns
+-   Generated boilerplate code
+
+## Next Steps
+
+-   Explore [Event-Driven Architecture](/arch/events)
+-   Learn about [Database Design](/arch/database)
+-   Review [Testing Strategies](/arch/testing)
+-   Understand [Background Processing](/arch/background-processing)
