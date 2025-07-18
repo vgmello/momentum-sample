@@ -2,7 +2,7 @@ import { defineConfig, type MarkdownOptions } from "vitepress";
 import MermaidExample from "./mermaidjs.mjs";
 import { generateReferenceSidebar } from "./tocParser";
 import { generateAdrSidebar } from "./adrParser";
-import { snippetPlugin } from "./plugins/snippet";
+import { snippetPluginExt } from "./plugins/snippet";
 
 const allMarkdownTransformers: MarkdownOptions = {
     theme: {
@@ -10,12 +10,12 @@ const allMarkdownTransformers: MarkdownOptions = {
         dark: "github-dark",
     },
 
+    preConfig: (md) => {
+        snippetPluginExt(md);
+    },
+
     config: (md) => {
         MermaidExample(md);
-        
-        // Disable the built-in snippet plugin and use our custom one
-        md.block.ruler.disable('snippet');
-        snippetPlugin(md, { root: process.cwd() });
     },
 };
 
