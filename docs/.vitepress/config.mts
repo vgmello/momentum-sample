@@ -93,6 +93,7 @@ export default defineConfig({
                         text: "Developer Guide",
                         collapsed: false,
                         items: [
+                            { text: "Documentation Layout", link: "/documentation-layout" },
                             { text: "Running Database Queries and Commands", link: "/dbcommand-usage-guide.md" },
                             { text: "Debugging Tips", link: "debugging" },
                         ],
