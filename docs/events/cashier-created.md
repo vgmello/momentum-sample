@@ -15,6 +15,10 @@ This event is published when:
 
 -   The cashier creation process completes successfully
 
+## Some other event data
+
+Some other event data text
+
 ## Event Payload
 
 | Property         | Type      | Required | Description                                                           |

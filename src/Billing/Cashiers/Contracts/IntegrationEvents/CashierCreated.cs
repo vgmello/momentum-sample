@@ -9,8 +9,14 @@ namespace Billing.Cashiers.Contracts.IntegrationEvents;
 ///     key information for proper message routing.
 /// </summary>
 /// <remarks>
-///     - The cashier creation process completes successfully <br />
-///     - Some other actions
+///     ## When It's Triggered
+///
+///     This event is published when:
+///     -   The cashier creation process completes successfully
+///
+///     ## Some other event data
+///
+///     Some other event data text
 /// </remarks>
 [EventTopic<Cashier>]
 public record CashierCreated([PartitionKey] Guid TenantId, [PartitionKey] int PartitionKeyTest, Cashier Cashier);

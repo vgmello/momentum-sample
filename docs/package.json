@@ -4,14 +4,15 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "docs:dev": "pnpm run generate:adr-table && pnpm run check:docfx && vitepress dev",
+    "dev": "pnpm docs:dotnet && pnpm adr:logs && pnpm docs:dev",
+    "docs:dev": "vitepress dev",
     "docs:build": "pnpm run generate:adr-table && pnpm run check:docfx && vitepress build",
     "docs:preview": "vitepress preview",
     "docs:dotnet": "tsx .vitepress/scripts/docs-dotnet.ts",
     "adr:logs": "tsx .vitepress/scripts/adrlogs-table-gen.ts"
   },
   "dependencies": {
-    "glob": "^10.3.10",
+    "glob": "^10.4.5",
     "gray-matter": "^4.0.3",
     "yaml": "^2.8.0"
   },

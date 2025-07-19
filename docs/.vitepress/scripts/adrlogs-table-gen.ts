@@ -2,7 +2,7 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { AdrParser } from "../plugins/adr/adrParser";
 
-const ADR_DIR_DEFAULT = "../../../arch/adr";
+const ADR_DIR_DEFAULT = "../../arch/adr";
 
 const adrDir = join(import.meta.dirname, ADR_DIR_DEFAULT);
 const outputPath = join(adrDir, "table.md");

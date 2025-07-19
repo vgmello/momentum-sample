@@ -113,7 +113,6 @@ export default defineConfig({
         socialLinks: [{ icon: "github", link: "https://github.com/" }],
 
         footer: {
-            message: "Billing Service Documentation",
             copyright: "Copyright © 2025 Billing Team",
         },
     },
