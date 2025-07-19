@@ -37,6 +37,10 @@ export default defineConfig({
             { text: "Reference", link: "/reference/Billing" },
         ],
 
+        editLink: {
+            pattern: 'https://github.com/user/project/edit/main/docs/:path'
+        },
+
         search: {
             provider: "local",
         },
