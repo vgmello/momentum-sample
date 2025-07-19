@@ -36,15 +36,18 @@ This event uses multiple partition keys for message routing:
 
 ## Technical Details
 
+Event Definition
+
 ```csharp
-// Event Definition
 [EventTopic<Cashier>]
 public sealed record CashierCreated(
-    [PartitionKey] Guid TenantId,
-    [PartitionKey] int PartitionKeyTest,
+    [PartitionKey(Order = 0)] Guid TenantId,
+    [PartitionKey(Order = 1)] int PartitionKeyTest,
     Cashier Cashier
-) : IntegrationEvent<CashierCreated>;
+);
 ```
+
+Additional Schemas:
 
 -   **Full Type:** `Billing.Cashiers.Contracts.IntegrationEvents.CashierCreated`
 -   **Namespace:** `Billing.Cashiers.Contracts.IntegrationEvents`

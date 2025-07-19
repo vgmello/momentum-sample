@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>eventmarkdowngen</ToolCommandName>
+    <PackageId>Operations.Extensions.EventMarkdownGenerator</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Operations Team</Authors>
+    <Description>Generates individual markdown documentation files for integration events from assemblies and XML documentation</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Operations.Extensions.Abstractions/Operations.Extensions.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\**" Pack="true" PackagePath="build\" />
+  </ItemGroup>
+
+  <Target Name="CreateToolsDirectory" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <ToolsOutputPath>$(OutputPath)tools\net9.0\</ToolsOutputPath>
+    </PropertyGroup>
+    
+    <MakeDir Directories="$(ToolsOutputPath)" />
+    
+    <ItemGroup>
+      <ToolFiles Include="$(OutputPath)*.dll" />
+      <ToolFiles Include="$(OutputPath)*.exe" />
+      <ToolFiles Include="$(OutputPath)*.json" />
+      <ToolFiles Include="$(OutputPath)*.pdb" />
+    </ItemGroup>
+    
+    <Copy SourceFiles="@(ToolFiles)" DestinationFolder="$(ToolsOutputPath)" />
+    
+    <ItemGroup>
+      <Content Include="$(ToolsOutputPath)**\*" Pack="true" PackagePath="tools\net9.0\" />
+    </ItemGroup>
+  </Target>
+
+</Project>

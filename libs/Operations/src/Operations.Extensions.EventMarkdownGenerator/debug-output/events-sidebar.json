@@ -1,0 +1,15 @@
+[
+  {
+    "text": "Billing",
+    "link": null,
+    "items": [
+      {
+        "text": "Cashier Created",
+        "link": "/cashier-created",
+        "items": [],
+        "collapsed": false
+      }
+    ],
+    "collapsed": false
+  }
+]
