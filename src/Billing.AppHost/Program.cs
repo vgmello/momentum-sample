@@ -82,7 +82,7 @@ builder
     .WithVolume("/app/docs/node_modules")
     .WithHttpEndpoint(port: 8119, targetPort: 5173, name: "http")
     .WithUrlForEndpoint("http", url => url.DisplayText = "App Documentation")
-    .WithHttpHealthCheck("toc.json");
+    .WithHttpHealthCheck("/");
 
 // builder
 //     .AddNpmApp("billing-ui", "../../../Billing/web/billing-ui", "dev")

@@ -1,9 +1,15 @@
+---
+editLink: false
+---
+
 # CashierCreated
 
-**Status:** Active
-**Version:** v1
-**Topic:** `cashiers`
-**Type:** Integration Event
+-   **Status:** Active
+-   **Version:** v1
+-   **Entity:** `cashier`
+-   **Type:** Integration Event
+-   **Topic:** `{env}.billing.public.cashiers.v1`
+-   **Partition Keys**: TenantId, PartitionKeyTest
 
 ## Description
 
@@ -21,11 +27,11 @@ Some other event data text
 
 ## Event Payload
 
-| Property         | Type      | Required | Description                                                           |
-| ---------------- | --------- | -------- | --------------------------------------------------------------------- |
-| TenantId         | `Guid`    | ✓        | Identifier of the tenant that owns the cashier (partition key)        |
-| PartitionKeyTest | `int`     | ✓        | Additional partition key for message routing (partition key)          |
-| Cashier          | `Cashier` | ✓        | Complete cashier object containing all cashier data and configuration |
+| Property                                                          | Type      | Required | Description                                                           |
+| ----------------------------------------------------------------- | --------- | -------- | --------------------------------------------------------------------- |
+| TenantId                                                          | `Guid`    | ✓        | No description available (partition key)                              |
+| PartitionKeyTest                                                  | `int`     | ✓        | Additional partition key for message routing (partition key)          |
+| [Cashier](./schemas/Billing.Cashiers.Contracts.Models.Cashier.md) | `Cashier` | ✓        | Complete cashier object containing all cashier data and configuration |
 
 ### Partition Keys
 
@@ -34,8 +40,15 @@ This event uses multiple partition keys for message routing:
 -   `TenantId` - Primary partition key based on tenant
 -   `PartitionKeyTest` - Secondary partition key for routing optimization
 
+### Reference Schemas
+
+#### Cashiers
+
+<!--@include: ./schemas/Billing.Cashiers.Contracts.Models.Cashier.md#schema-->
+
 ## Technical Details
 
+<<<<<<< HEAD
 Event Definition
 
 ```csharp
@@ -50,7 +63,8 @@ public sealed record CashierCreated(
 Additional Schemas:
 
 -   **Full Type:** `Billing.Cashiers.Contracts.IntegrationEvents.CashierCreated`
+=======
+-   **Full Type:** [`Billing.Cashiers.Contracts.IntegrationEvents.CashierCreated`](https://[github.url.from.config.com]/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs)
+>>>>>>> 219c19e (Update documentation and schemas for CashierCreated)
 -   **Namespace:** `Billing.Cashiers.Contracts.IntegrationEvents`
 -   **Topic Attribute:** `[EventTopic<Cashier>]`
--   **Payload Type:** Record with positional parameters
--   **Partition Keys:** TenantId, PartitionKeyTest (both marked with `[PartitionKey]`)

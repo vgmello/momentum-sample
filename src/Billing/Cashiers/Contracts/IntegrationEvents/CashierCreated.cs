@@ -8,6 +8,8 @@ namespace Billing.Cashiers.Contracts.IntegrationEvents;
 ///     Published when a new cashier is successfully created in the billing system. This event contains the complete cashier data and partition
 ///     key information for proper message routing.
 /// </summary>
+/// <param name="PartitionKeyTest">Additional partition key for message routing</param>
+/// <param name="Cashier">Cashier object containing all cashier data and configuration</param>
 /// <remarks>
 ///     ## When It's Triggered
 ///
@@ -19,4 +21,8 @@ namespace Billing.Cashiers.Contracts.IntegrationEvents;
 ///     Some other event data text
 /// </remarks>
 [EventTopic<Cashier>]
-public record CashierCreated([PartitionKey] Guid TenantId, [PartitionKey] int PartitionKeyTest, Cashier Cashier);
+public record CashierCreated(
+    [PartitionKey(Order = 0)] Guid TenantId,
+    [PartitionKey(Order = 1)] int PartitionKeyTest,
+    Cashier Cashier
+);
