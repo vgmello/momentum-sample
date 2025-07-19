@@ -75,20 +75,20 @@ builder
     })
     .WithHttpHealthCheck("/health/internal");
 
+builder
+    .AddContainer("billing-docs", "billing-docfx")
+    .WithDockerfile("../../docs")
+    .WithBindMount("../../", "/app")
+    .WithVolume("/app/docs/node_modules")
+    .WithHttpEndpoint(port: 8119, targetPort: 5173, name: "http")
+    .WithUrlForEndpoint("http", url => url.DisplayText = "App Documentation")
+    .WithHttpHealthCheck("toc.json");
+
 // builder
 //     .AddNpmApp("billing-ui", "../../../Billing/web/billing-ui", "dev")
 //     .WithHttpEndpoint(env: "PORT", port: 8105, isProxied: false)
 //     .WithUrlForEndpoint("http", url => url.DisplayText = "Billing UI")
 //     .WithReference(billingApi)
 //     .PublishAsDockerFile();
-
-// builder
-//     .AddContainer("billing-docs", "billing-docfx")
-//     .WithDockerfile("../../docs")
-//     .WithBindMount("../../", "/app")
-//     .WithHttpEndpoint(port: 8119, targetPort: 8080, name: "http")
-//     .WithArgs("docs/docfx.json", "--serve", "--hostname=*", "--logLevel=error")
-//     .WithUrlForEndpoint("http", url => url.DisplayText = "App Documentation")
-//     .WithHttpHealthCheck("toc.json");
 
 await builder.Build().RunAsync();
