@@ -1,6 +1,6 @@
 import type { MarkdownRenderer } from "vitepress";
 
-const MermaidExample = (md: MarkdownRenderer) => {
+const MermaidPlugin = (md: MarkdownRenderer) => {
     const defaultRenderer = md.renderer.rules.fence;
 
     if (!defaultRenderer) {
@@ -42,4 +42,4 @@ const MermaidExample = (md: MarkdownRenderer) => {
     };
 };
 
-export default MermaidExample;
+export default MermaidPlugin;

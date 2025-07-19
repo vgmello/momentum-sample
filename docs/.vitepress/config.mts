@@ -1,8 +1,12 @@
 import { defineConfig, type MarkdownOptions } from "vitepress";
-import MermaidExample from "./mermaidjs.mjs";
-import { generateReferenceSidebar } from "./tocParser";
-import { generateAdrSidebar } from "./adrParser";
-import { snippetPluginExt } from "./plugins/snippet";
+
+import MermaidExample from "./plugins/mermaid";
+import SnippetPluginExt from "./plugins/snippet";
+import TocSidebar from "./plugins/tocSidebar";
+import AdrSidebar from "./plugins/adr/adrSidebar";
+
+const REF_DIR = "reference/toc.yml"
+const ADR_DIR = "arch/adr";
 
 const allMarkdownTransformers: MarkdownOptions = {
     theme: {
@@ -11,7 +15,7 @@ const allMarkdownTransformers: MarkdownOptions = {
     },
 
     preConfig: (md) => {
-        snippetPluginExt(md);
+        SnippetPluginExt(md);
     },
 
     config: (md) => {
@@ -49,7 +53,7 @@ export default defineConfig({
                             { text: "Event-Driven Architecture", link: "/eda" },
                             { text: "Database Design", link: "/database" },
                             { text: "Background Processing", link: "/background-processing" },
-                            generateAdrSidebar(),
+                            { text: "ADRs", base: "/arch/adr", items: AdrSidebar(ADR_DIR) },
                         ],
                     },
                     {
@@ -102,7 +106,7 @@ export default defineConfig({
             },
             "/reference": {
                 base: "/reference",
-                items: generateReferenceSidebar(),
+                items: TocSidebar(REF_DIR),
             },
         },
 

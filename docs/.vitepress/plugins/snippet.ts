@@ -1,8 +1,8 @@
-import type { MarkdownIt } from "markdown-it";
+import MarkdownIt from "markdown-it";
 
-export function snippetPluginExt(md: MarkdownIt) {
-    const VUE_SENSITIVE_LANGS = new Set(["csharp", "cs", "java", "typescript", "ts", "tsx", "cpp", "c", "h"]);
+const VUE_SENSITIVE_LANGS = new Set(["csharp", "cs", "java", "typescript", "ts", "tsx", "cpp", "c", "h"]);
 
+const SnippetPluginExt = (md: MarkdownIt) => {
     const originalSnippetRenderer = md.renderer.rules.fence!;
 
     md.renderer.rules.fence = (...args) => {
@@ -52,3 +52,5 @@ export function snippetPluginExt(md: MarkdownIt) {
         return originalSnippetRenderer(...args);
     };
 }
+
+export default SnippetPluginExt;
