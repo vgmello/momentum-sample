@@ -49,6 +49,9 @@ This event uses multiple partition keys for message routing:
 ## Technical Details
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fb52877 (Docs Update)
 Event Definition
 
 ```csharp
@@ -63,8 +66,11 @@ public sealed record CashierCreated(
 Additional Schemas:
 
 -   **Full Type:** `Billing.Cashiers.Contracts.IntegrationEvents.CashierCreated`
+<<<<<<< HEAD
 =======
 -   **Full Type:** [`Billing.Cashiers.Contracts.IntegrationEvents.CashierCreated`](https://[github.url.from.config.com]/Billing/Cashiers/Contracts/IntegrationEvents/CashierCreated.cs)
 >>>>>>> 219c19e (Update documentation and schemas for CashierCreated)
+=======
+>>>>>>> fb52877 (Docs Update)
 -   **Namespace:** `Billing.Cashiers.Contracts.IntegrationEvents`
 -   **Topic Attribute:** `[EventTopic<Cashier>]`
